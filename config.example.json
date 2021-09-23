@@ -1,0 +1,11 @@
+{
+	"discord": {
+		"token": "",
+		"clientId": "",
+		"prefix": "--p"
+	},
+	"spotify": {
+		"clientId": "",
+		"clientSecret": ""
+	}
+}

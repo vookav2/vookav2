@@ -1,0 +1,34 @@
+{
+	"name": "vookav2",
+	"version": "0.0.0",
+	"main": "build/src/index.js",
+	"types": "build/src/index.d.ts",
+	"license": "MIT",
+	"scripts": {
+		"start": "ts-node --project tsconfig.prod.json src/index.ts",
+		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
+		"lint": "prettier --write ."
+	},
+	"dependencies": {
+		"@discordjs/builders": "^0.6.0",
+		"@discordjs/opus": "^0.6.0",
+		"@discordjs/rest": "^0.1.0-canary.0",
+		"@discordjs/voice": "^0.6.0",
+		"consola": "^2.15.3",
+		"discord-api-types": "^0.23.1",
+		"discord.js": "^13.1.0",
+		"glob": "^7.1.7",
+		"libsodium-wrappers": "^0.7.9",
+		"monk": "^7.3.4",
+		"ts-node": "^10.2.1",
+		"voosic": "^0.0.1",
+		"youtube-dl-exec": "^1.2.6"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.4",
+		"@types/node": "^16.9.6",
+		"prettier": "^2.4.1",
+		"ts-node-dev": "^1.1.8",
+		"typescript": "^4.4.3"
+	}
+}
