@@ -62,6 +62,7 @@ export const execute = async (
 				20e3
 			)
 		} catch (error) {
+			client.logger.error(error)
 			await message.editReply(
 				'Failed to join the voice channel within 20 seconds, please try again later!'
 			)

@@ -74,9 +74,14 @@ export class Track implements TrackData {
 		let song: Song
 		// let nextSongs: Song | null = null
 
-		result = await youtube.resolve(any)
-		if (!result || !Array.isArray(result)) return null
-		song = result.shift() as Song
+		try {
+			result = await youtube.resolve(any)
+			if (!result || !Array.isArray(result)) return null
+			song = result.shift() as Song
+		} catch (error) {
+			console.error(error)
+			return null
+		}
 
 		const wrappedMethods = {
 			onStart() {
