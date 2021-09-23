@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name   : "vookav2",
     script : "./src/index.ts",
-    cwd: "/var/app/",
+    cwd: "/var/app/vookav2/",
     interpreter: "ts-node",
     max_memory_restart: "700M",
     source_map_support: false,
