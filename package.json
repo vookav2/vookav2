@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "ts-node --project tsconfig.prod.json src/index.ts",
-		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
+		"dev": "DEBUG=* ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
 		"lint": "prettier --write ."
 	},
 	"dependencies": {
