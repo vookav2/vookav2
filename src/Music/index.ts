@@ -51,7 +51,6 @@ export default class MusicSubscribtion {
 			this.audioPlayer.play(resource)
 			this.queueLock = false
 		} catch (error) {
-			console.warn(error)
 			nextTrack.onError(error as Error)
 			this.queueLock = false
 			return this.processQueue()

@@ -8,7 +8,6 @@ import { TrackData, TrackEvent } from '../Interfaces/Track'
 import { raw as ytdl } from 'youtube-dl-exec'
 import Voosic, { Song } from 'voosic'
 import { config } from '../util'
-import { debug } from 'console'
 
 const noop = () => {}
 
@@ -35,7 +34,6 @@ export class Track implements TrackData {
 				},
 				{ stdio: ['ignore', 'pipe', 'ignore'] }
 			)
-			debug(process)
 			if (!process.stdout) {
 				reject(new Error('No stdout'))
 				return
@@ -48,7 +46,6 @@ export class Track implements TrackData {
 			}
 			process
 				.once('spawn', () => {
-					debug(stream)
 					demuxProbe(stream)
 						.then((probe) =>
 							resolve(
