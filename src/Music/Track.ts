@@ -32,42 +32,46 @@ export class Track implements TrackData {
 				inputType: StreamType.WebmOpus
 			}
 		)
-		// return new Promise((resolve, reject) => {
-		// 	const process = ytdl(
-		// 		`https://www.youtube.com/watch?v=${this.song?.id}` as string,
-		// 		{
-		// 			o: '-',
-		// 			q: '',
-		// 			f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-		// 			r: '100K',
-		// 		},
-		// 		{ stdio: ['ignore', 'pipe', 'ignore'] }
-		// 	)
-		// 	if (!process.stdout) {
-		// 		reject(new Error('No stdout'))
-		// 		return
-		// 	}
-		// 	const stream = process.stdout
-		// 	const onError = (err: Error) => {
-		// 		if (!process.killed) process.kill()
-		// 		stream.resume()
-		// 		reject(err)
-		// 	}
-		// 	process
-		// 		.once('spawn', () => {
-		// 			demuxProbe(stream)
-		// 				.then((probe) =>
-		// 					resolve(
-		// 						createAudioResource(probe.stream, {
-		// 							metadata: this,
-		// 							inputType: probe.type,
-		// 						})
-		// 					)
-		// 				)
-		// 				.catch(onError)
-		// 		})
-		// 		.catch(onError)
-		// })
+	}
+	public async createRawAudioResource(): Promise<AudioResource<Track>>{
+		return new Promise(async (resolve, reject) => {
+			const youtubeId = await this.song?.getYoutubeId()
+			if (youtubeId) reject(new Error("Cannot create audio resource"));
+		const process = ytdl(
+			`https://www.youtube.com/watch?v=${youtubeId}` as string,
+			{
+				o: '-',
+				q: '',
+				f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+				r: '100K',
+			},
+			{ stdio: ['ignore', 'pipe', 'ignore'] }
+		)
+		if (!process.stdout) {
+			reject(new Error('No stdout'))
+			return
+		}
+		const stream = process.stdout
+		const onError = (err: Error) => {
+			if (!process.killed) process.kill()
+			stream.resume()
+			reject(err)
+		}
+		process
+			.once('spawn', () => {
+				demuxProbe(stream)
+					.then((probe) =>
+						resolve(
+							createAudioResource(probe.stream, {
+								metadata: this,
+								inputType: probe.type,
+							})
+						)
+					)
+					.catch(onError)
+			})
+			.catch(onError)
+	})
 	}
 	public static async from(
 		any: string,

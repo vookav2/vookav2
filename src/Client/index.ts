@@ -30,18 +30,14 @@ class VookaClient extends Client {
 		this.restApi.setToken(this.config.discord.token)
 		this.logger.success('Discord: Client created')
 	}
+	/**
+	 * ===========================
+	 * Client Initialization
+	 * ===========================
+	 */
 	public init() {
 		this.logger.info('Discord: Initializing...')
 		return this.loadCommandsAndEvents()
-	}
-	public getCommandsJSON(): Object[] {
-		return this.commands.map((command) => command.data.toJSON())
-	}	
-	public async refreshCommands(): Promise<void> {
-		this.logger.info(`Discord: Refreshing slash commands`)
-		if (this.config.discord.guildId) {
-			await this.updateGuildCommands(this.config.discord.guildId)
-		}
 	}
 	public async connect(){
 		this.logger.info('Discord: Connecting...')
@@ -51,6 +47,21 @@ class VookaClient extends Client {
 				this.destroy()
 			})
 	}
+
+	/**
+	 * ===========================
+	 * Client Commands Manager
+	 * ===========================
+	 */
+	public async refreshCommands(): Promise<void> {
+		this.logger.info(`Discord: Refreshing slash commands`)
+		if (this.config.discord.guildId) {
+			await this.updateGuildCommands(this.config.discord.guildId)
+		}
+	}
+	public getCommandsJSON(): Object[] {
+		return this.commands.map((command) => command.data.toJSON())
+	}	
 	private async updateGuildCommands(guildId: string){
 		const res = await this.restApi
 			.put(Routes.applicationGuildCommands(this.config.discord.clientId, guildId), {
