@@ -99,10 +99,13 @@ export const execute = async (
 			}
 			subscribtion.enqueue(track)
 			let hasMoreSongs = ''
-			if (track.nextSongs?.length){
+			if (track.nextSongs?.length) {
 				hasMoreSongs = ` and ${track.nextSongs.length} mores`
 			}
-			await message.followUp({content: `Enqueued **${track.song?.fullTitle}**${hasMoreSongs}`, ephemeral: false})
+			await message.followUp({
+				content: `Enqueued **${track.song?.fullTitle}**${hasMoreSongs}`,
+				ephemeral: false,
+			})
 		} catch (err) {
 			client.logger.error(err)
 			await message.reply('Failed to play track, please try again later!')

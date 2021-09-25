@@ -39,7 +39,7 @@ class VookaClient extends Client {
 		this.logger.info('Discord: Initializing...')
 		return this.loadCommandsAndEvents()
 	}
-	public async connect(){
+	public async connect() {
 		this.logger.info('Discord: Connecting...')
 		return this.login(this.config.discord.token)
 			.then(() => this)
@@ -61,29 +61,37 @@ class VookaClient extends Client {
 	}
 	public getCommandsJSON(): Object[] {
 		return this.commands.map((command) => command.data.toJSON())
-	}	
-	private async updateGuildCommands(guildId: string){
-		const res = await this.restApi
-			.put(Routes.applicationGuildCommands(this.config.discord.clientId, guildId), {
+	}
+	private async updateGuildCommands(guildId: string) {
+		const res = await this.restApi.put(
+			Routes.applicationGuildCommands(this.config.discord.clientId, guildId),
+			{
 				body: this.getCommandsJSON(),
-			})
+			}
+		)
 		this.logger.success(`Discord: Successfully update guild commands`)
 		return
 	}
-	private async deleteApplicationCommands(): Promise<void>{
+	private async deleteApplicationCommands(): Promise<void> {
 		const commands = await this.getApplicationCommands()
-		if (commands && Array.isArray(commands)){
-			await Promise.all(commands.map(async (x: any) => {
-				return this.restApi.delete(Routes.applicationCommand(this.config.discord.clientId, x.id))
-			}))
+		if (commands && Array.isArray(commands)) {
+			await Promise.all(
+				commands.map(async (x: any) => {
+					return this.restApi.delete(
+						Routes.applicationCommand(this.config.discord.clientId, x.id)
+					)
+				})
+			)
 		}
 		this.logger.success(`Discord: Successfully delete application commands`)
 		return
 	}
-	private async getApplicationCommands(){
-		return this.restApi.get(Routes.applicationCommands(this.config.discord.clientId))
+	private async getApplicationCommands() {
+		return this.restApi.get(
+			Routes.applicationCommands(this.config.discord.clientId)
+		)
 	}
-	private loadCommandsAndEvents(){
+	private loadCommandsAndEvents() {
 		const promises = [
 			importFiles(commandsPath, async (filePath: string) => {
 				const command: Command = await import(filePath)
@@ -93,7 +101,9 @@ class VookaClient extends Client {
 						this.aliases.set(alias, command)
 					})
 				}
-				this.logger.log(`Discord: Successfully loaded ${filePath} command file. {Command Name: ${command.data.name}}`)
+				this.logger.log(
+					`Discord: Successfully loaded ${filePath} command file. {Command Name: ${command.data.name}}`
+				)
 			}),
 			importFiles(eventsPath, async (filePath: string) => {
 				const event: Event = await import(filePath)
@@ -104,9 +114,11 @@ class VookaClient extends Client {
 					} else {
 						this.on(event.name, event.execute.bind(null, this))
 					}
-					this.logger.log(`Discord: Successfully loaded ${filePath} event file. {Event Name: ${event.name}}`)
+					this.logger.log(
+						`Discord: Successfully loaded ${filePath} event file. {Event Name: ${event.name}}`
+					)
 				}
-			})
+			}),
 		]
 		return Promise.all(promises)
 	}

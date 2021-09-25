@@ -46,9 +46,9 @@ export default class MusicSubscribtion {
 		try {
 			const resource = await nextTrack.createRawAudioResource()
 			this.audioPlayer.play(resource)
-			if (nextTrack.nextSongs?.length){
+			if (nextTrack.nextSongs?.length) {
 				nextTrack.song = nextTrack.nextSongs.shift()
-				if (nextTrack.nextSongs.length){
+				if (nextTrack.nextSongs.length) {
 					nextTrack.nextSongs = nextTrack.nextSongs
 				}
 				this.queue.push(nextTrack)

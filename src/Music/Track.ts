@@ -25,58 +25,55 @@ export class Track implements TrackData {
 	public async createAudioResource(): Promise<AudioResource<Track>> {
 		const youtubeId = await this.song?.getYoutubeId()
 		const streamUrl = await createStreamUrl(youtubeId as string)
-		return createAudioResource(
-			streamUrl as string,
-			{
-				metadata: this,
-				inputType: StreamType.WebmOpus
-			}
-		)
+		return createAudioResource(streamUrl as string, {
+			metadata: this,
+			inputType: StreamType.WebmOpus,
+		})
 	}
-	public async createRawAudioResource(): Promise<AudioResource<Track>>{
+	public async createRawAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise(async (resolve, reject) => {
 			const youtubeId = await this.song?.getYoutubeId()
-			if (youtubeId) reject(new Error("Cannot create audio resource"));
-		const process = ytdl(
-			`https://www.youtube.com/watch?v=${youtubeId}` as string,
-			{
-				o: '-',
-				q: '',
-				f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-				r: '100K',
-			},
-			{ stdio: ['ignore', 'pipe', 'ignore'] }
-		)
-		if (!process.stdout) {
-			reject(new Error('No stdout'))
-			return
-		}
-		const stream = process.stdout
-		const onError = (err: Error) => {
-			if (!process.killed) process.kill()
-			stream.resume()
-			reject(err)
-		}
-		process
-			.once('spawn', () => {
-				demuxProbe(stream)
-					.then((probe) =>
-						resolve(
-							createAudioResource(probe.stream, {
-								metadata: this,
-								inputType: probe.type,
-							})
+			if (!youtubeId) reject(new Error('Cannot create audio resource'))
+			const process = ytdl(
+				`https://www.youtube.com/watch?v=${youtubeId}` as string,
+				{
+					o: '-',
+					q: '',
+					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+					r: '100K',
+				},
+				{ stdio: ['ignore', 'pipe', 'ignore'] }
+			)
+			if (!process.stdout) {
+				reject(new Error('No stdout'))
+				return
+			}
+			const stream = process.stdout
+			const onError = (err: Error) => {
+				if (!process.killed) process.kill()
+				stream.resume()
+				reject(err)
+			}
+			process
+				.once('spawn', () => {
+					demuxProbe(stream)
+						.then((probe) =>
+							resolve(
+								createAudioResource(probe.stream, {
+									metadata: this,
+									inputType: probe.type,
+								})
+							)
 						)
-					)
-					.catch(onError)
-			})
-			.catch(onError)
-	})
+						.catch(onError)
+				})
+				.catch(onError)
+		})
 	}
 	public static async from(
 		any: string,
 		methods?: Pick<Track, TrackEvent>
-	): Promise<Track |null> {
+	): Promise<Track | null> {
 		const wrappedMethods = {
 			onStart() {
 				wrappedMethods.onStart = noop
@@ -92,27 +89,27 @@ export class Track implements TrackData {
 			},
 		}
 		const track = new Track(wrappedMethods)
-		const voosic = Voosic({spotify: config.spotify})
+		const voosic = Voosic({ spotify: config.spotify })
 		const res = await voosic(any)
-		if (res instanceof Song){
+		if (res instanceof Song) {
 			track.song = res
-			if (res.nextSongs?.length){
+			if (res.nextSongs?.length) {
 				track.nextSongs = res.nextSongs
-				res.nextSongs = res.nextSongs.slice(0,0)
+				res.nextSongs = res.nextSongs.slice(0, 0)
 			}
 			return track
 		}
-		if(res instanceof Playlist && res.songs?.length){
+		if (res instanceof Playlist && res.songs?.length) {
 			track.song = res.songs.shift()
 			track.nextSongs = res.songs
 			return track
 		}
-		if(res instanceof Album && res.songs?.length){
+		if (res instanceof Album && res.songs?.length) {
 			track.song = res.songs.shift()
 			track.nextSongs = res.songs
 			return track
 		}
-		if(res instanceof Artist && res.songs?.length) {
+		if (res instanceof Artist && res.songs?.length) {
 			track.song = res.songs.shift()
 			track.nextSongs = res.songs
 			return track

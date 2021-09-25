@@ -2,10 +2,7 @@ import {
 	SlashCommandBuilder,
 	SlashCommandStringOption,
 } from '@discordjs/builders'
-import {
-	CommandInteraction,
-	Message,
-} from 'discord.js'
+import { CommandInteraction, Message } from 'discord.js'
 import VookaClient from '../../Client'
 
 export const data = new SlashCommandBuilder()
@@ -18,11 +15,11 @@ export const execute = async (
 ): Promise<void> => {
 	if (message instanceof CommandInteraction) {
 		const subscribtion = client.subscribtions.get(message.guildId as string)
-    if (subscribtion){
-      try {
-        subscribtion.audioPlayer.stop()
-        await message.followUp({content: `Skipped song!`, ephemeral: true})
-      } catch (error) {}
-    }
+		if (subscribtion) {
+			try {
+				subscribtion.audioPlayer.stop()
+				await message.followUp({ content: `Skipped song!`, ephemeral: true })
+			} catch (error) {}
+		}
 	}
 }

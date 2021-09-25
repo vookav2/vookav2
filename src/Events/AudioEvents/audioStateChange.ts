@@ -15,9 +15,9 @@ export default async function (
 		newState.status === AudioPlayerStatus.Idle &&
 		oldState.status !== AudioPlayerStatus.Idle
 	) {
-		(oldState.resource as AudioResource<Track>).metadata.onFinish()
+		;(oldState.resource as AudioResource<Track>).metadata.onFinish()
 		void musicSubscription.processQueue()
 	} else if (newState.status === AudioPlayerStatus.Playing) {
-		(newState.resource as AudioResource<Track>).metadata.onStart()
+		;(newState.resource as AudioResource<Track>).metadata.onStart()
 	}
 }
