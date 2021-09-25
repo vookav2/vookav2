@@ -8,5 +8,6 @@ interface Run {
 export interface Command {
 	data: SlashCommandBuilder
 	aliases?: string[]
+	guildOnly?: boolean
 	execute: Run
 }

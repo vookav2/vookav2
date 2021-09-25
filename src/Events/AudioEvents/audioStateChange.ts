@@ -15,18 +15,9 @@ export default async function (
 		newState.status === AudioPlayerStatus.Idle &&
 		oldState.status !== AudioPlayerStatus.Idle
 	) {
-		/**
-		 * TODO
-		 * 1. Emit song onFinish()
-		 * 2. Proses next song queue
-		 */
-		;(oldState.resource as AudioResource<Track>).metadata.onFinish()
-		musicSubscription.processQueue()
+		(oldState.resource as AudioResource<Track>).metadata.onFinish()
+		void musicSubscription.processQueue()
 	} else if (newState.status === AudioPlayerStatus.Playing) {
-		/**
-		 * TODO
-		 * 1. Emit song onStart()
-		 */
-		;(newState.resource as AudioResource<Track>).metadata.onStart()
+		(newState.resource as AudioResource<Track>).metadata.onStart()
 	}
 }

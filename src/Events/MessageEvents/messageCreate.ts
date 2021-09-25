@@ -1,11 +1,11 @@
 import { Message } from 'discord.js'
-import ExtendedDiscordClient from '../../Client'
+import VookaClient from '../../Client'
 import { ClientEventTypes } from '../../Interfaces/Event'
 import { config } from '../../util'
 
 export const name: ClientEventTypes = 'messageCreate'
 export const execute = async (
-	client: ExtendedDiscordClient,
+	client: VookaClient,
 	message: Message
 ): Promise<void> => {
 	if (

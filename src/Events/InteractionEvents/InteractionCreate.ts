@@ -1,10 +1,10 @@
 import { CommandInteraction, Interaction } from 'discord.js'
-import ExtendedDiscordClient from '../../Client'
+import VookaClient from '../../Client'
 import { ClientEventTypes } from '../../Interfaces/Event'
 
 export const name: ClientEventTypes = 'interactionCreate'
 export const execute = async (
-	client: ExtendedDiscordClient,
+	client: VookaClient,
 	interaction: Interaction
 ): Promise<void> => {
 	if (!interaction.guildId) return

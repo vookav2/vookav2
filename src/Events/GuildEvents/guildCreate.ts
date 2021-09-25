@@ -1,9 +1,9 @@
 import { Guild } from 'discord.js'
-import ExtendedDiscordClient from '../../Client'
+import VookaClient from '../../Client'
 import { ClientEventTypes, ExecuteEvent } from '../../Interfaces/Event'
 
 export const name: ClientEventTypes = 'guildCreate'
 export const execute = async (
-	client: ExtendedDiscordClient,
+	client: VookaClient,
 	guild: Guild
 ): Promise<void> => {}

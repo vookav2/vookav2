@@ -1,7 +1,8 @@
 interface DiscordConfig {
 	token: string
 	clientId: string
-	prefix: string
+	prefix: string,
+	guildId?: string
 }
 
 interface SpotifyConfig {

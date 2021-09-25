@@ -5,3 +5,5 @@ build
 prod
 dist
 .vscode
+dump
+yarn.error.log

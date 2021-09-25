@@ -14,7 +14,7 @@ import {
 	InternalDiscordGatewayAdapterCreator,
 	Message,
 } from 'discord.js'
-import ExtendedDiscordClient from '../../Client'
+import VookaClient from '../../Client'
 import MusicSubscribtion from '../../Music'
 import { Track } from '../../Music/Track'
 
@@ -29,7 +29,7 @@ export const data = new SlashCommandBuilder()
 			.setName('query')
 	)
 export const execute = async (
-	client: ExtendedDiscordClient,
+	client: VookaClient,
 	message: Message | CommandInteraction
 ): Promise<void> => {
 	if (message instanceof CommandInteraction) {
@@ -61,8 +61,8 @@ export const execute = async (
 				VoiceConnectionStatus.Ready,
 				20e3
 			)
-		} catch (error) {
-			client.logger.error(error)
+		} catch (err) {
+			client.logger.error(err)
 			await message.editReply(
 				'Failed to join the voice channel within 20 seconds, please try again later!'
 			)
@@ -81,10 +81,10 @@ export const execute = async (
 						.followUp({ content: 'Now finished!', ephemeral: true })
 						.catch(client.logger.warn)
 				},
-				onError(error) {
-					client.logger.warn(error)
+				onError(err) {
+					client.logger.warn(err)
 					message
-						.followUp({ content: `Error: ${error.message}`, ephemeral: true })
+						.followUp({ content: `Error: ${err.message}`, ephemeral: true })
 						.catch(client.logger.warn)
 				},
 			})
@@ -98,9 +98,13 @@ export const execute = async (
 				return
 			}
 			subscribtion.enqueue(track)
-			await message.followUp(`Enqueued **${track.song?.fullTitle}**`)
-		} catch (error) {
-			client.logger.error(error)
+			let hasMoreSongs = ''
+			if (track.nextSongs?.length){
+				hasMoreSongs = ` and ${track.nextSongs.length} mores`
+			}
+			await message.followUp({content: `Enqueued **${track.song?.fullTitle}**${hasMoreSongs}`, ephemeral: false})
+		} catch (err) {
+			client.logger.error(err)
 			await message.reply('Failed to play track, please try again later!')
 		}
 	}

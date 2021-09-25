@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "ts-node --project tsconfig.prod.json src/index.ts",
-		"dev": "DEBUG=* ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
+		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
 		"lint": "prettier --write ."
 	},
 	"dependencies": {
@@ -21,8 +21,7 @@
 		"libsodium-wrappers": "^0.7.9",
 		"monk": "^7.3.4",
 		"ts-node": "^10.2.1",
-		"voosic": "^0.0.1",
-		"youtube-dl-exec": "^1.2.6"
+		"voosic": "^1.0.3"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",

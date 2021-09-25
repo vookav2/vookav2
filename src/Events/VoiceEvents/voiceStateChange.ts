@@ -30,7 +30,7 @@ export default async function (
 					VoiceConnectionStatus.Connecting,
 					5_000
 				)
-			} catch (error) {
+			} catch (err) {
 				musicSubscribtion.voiceConnection.destroy()
 			}
 		} else if (musicSubscribtion.voiceConnection.rejoinAttempts < 5) {

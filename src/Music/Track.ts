@@ -6,103 +6,113 @@ import {
 } from '@discordjs/voice'
 import { TrackData, TrackEvent } from '../Interfaces/Track'
 import { raw as ytdl } from 'youtube-dl-exec'
-import Voosic, { Song } from 'voosic'
+import Voosic, { Song, createStreamUrl, Playlist, Album, Artist } from 'voosic'
 import { config } from '../util'
 
 const noop = () => {}
 
 export class Track implements TrackData {
-	song: Song | undefined
+	song!: Song | undefined
+	nextSongs!: Song[]
 	onStart: () => void
 	onFinish: () => void
 	onError: (error: Error) => void
-	private constructor({ song, onStart, onFinish, onError }: TrackData) {
-		this.song = song
+	private constructor({ onStart, onFinish, onError }: TrackData) {
 		this.onStart = onStart
 		this.onFinish = onFinish
 		this.onError = onError
 	}
-	public createAudioResource(): Promise<AudioResource<Track>> {
-		return new Promise((resolve, reject) => {
-			const process = ytdl(
-				`https://www.youtube.com/watch?v=${this.song?.id}` as string,
-				{
-					o: '-',
-					q: '',
-					f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-					r: '100K',
-				},
-				{ stdio: ['ignore', 'pipe', 'ignore'] }
-			)
-			if (!process.stdout) {
-				reject(new Error('No stdout'))
-				return
+	public async createAudioResource(): Promise<AudioResource<Track>> {
+		const youtubeId = await this.song?.getYoutubeId()
+		const streamUrl = await createStreamUrl(youtubeId as string)
+		return createAudioResource(
+			streamUrl as string,
+			{
+				metadata: this,
+				inputType: StreamType.WebmOpus
 			}
-			const stream = process.stdout
-			const onError = (error: Error) => {
-				if (!process.killed) process.kill()
-				stream.resume()
-				reject(error)
-			}
-			process
-				.once('spawn', () => {
-					demuxProbe(stream)
-						.then((probe) =>
-							resolve(
-								createAudioResource(probe.stream, {
-									metadata: this,
-									inputType: probe.type,
-								})
-							)
-						)
-						.catch(onError)
-				})
-				.catch(onError)
-		})
+		)
+		// return new Promise((resolve, reject) => {
+		// 	const process = ytdl(
+		// 		`https://www.youtube.com/watch?v=${this.song?.id}` as string,
+		// 		{
+		// 			o: '-',
+		// 			q: '',
+		// 			f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+		// 			r: '100K',
+		// 		},
+		// 		{ stdio: ['ignore', 'pipe', 'ignore'] }
+		// 	)
+		// 	if (!process.stdout) {
+		// 		reject(new Error('No stdout'))
+		// 		return
+		// 	}
+		// 	const stream = process.stdout
+		// 	const onError = (err: Error) => {
+		// 		if (!process.killed) process.kill()
+		// 		stream.resume()
+		// 		reject(err)
+		// 	}
+		// 	process
+		// 		.once('spawn', () => {
+		// 			demuxProbe(stream)
+		// 				.then((probe) =>
+		// 					resolve(
+		// 						createAudioResource(probe.stream, {
+		// 							metadata: this,
+		// 							inputType: probe.type,
+		// 						})
+		// 					)
+		// 				)
+		// 				.catch(onError)
+		// 		})
+		// 		.catch(onError)
+		// })
 	}
 	public static async from(
 		any: string,
-		methods: Pick<Track, TrackEvent>
-	): Promise<Track | null> {
-		const { spotify, youtube } = Voosic({
-			limit: 10,
-			noExplicit: false,
-			simpleResult: true,
-			spotify: config.spotify,
-		})
-
-		let result: any
-		let song: Song
-		// let nextSongs: Song | null = null
-
-		try {
-			result = await youtube.resolve(any)
-			if (!result || !Array.isArray(result)) return null
-			song = result.shift() as Song
-		} catch (error) {
-			console.error(error)
-			return null
-		}
-
+		methods?: Pick<Track, TrackEvent>
+	): Promise<Track |null> {
 		const wrappedMethods = {
 			onStart() {
 				wrappedMethods.onStart = noop
-				methods.onStart()
+				methods?.onStart()
 			},
 			onFinish() {
 				wrappedMethods.onFinish = noop
-				methods.onFinish()
+				methods?.onFinish()
 			},
-			onError(error: Error) {
+			onError(err: Error) {
 				wrappedMethods.onError = noop
-				methods.onError(error)
+				methods?.onError(err)
 			},
 		}
-
-		const track = new Track({
-			song,
-			...wrappedMethods,
-		})
-		return track
+		const track = new Track(wrappedMethods)
+		const voosic = Voosic({spotify: config.spotify})
+		const res = await voosic(any)
+		if (res instanceof Song){
+			track.song = res
+			if (res.nextSongs?.length){
+				track.nextSongs = res.nextSongs
+				res.nextSongs = res.nextSongs.slice(0,0)
+			}
+			return track
+		}
+		if(res instanceof Playlist && res.songs?.length){
+			track.song = res.songs.shift()
+			track.nextSongs = res.songs
+			return track
+		}
+		if(res instanceof Album && res.songs?.length){
+			track.song = res.songs.shift()
+			track.nextSongs = res.songs
+			return track
+		}
+		if(res instanceof Artist && res.songs?.length) {
+			track.song = res.songs.shift()
+			track.nextSongs = res.songs
+			return track
+		}
+		return null
 	}
 }

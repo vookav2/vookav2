@@ -7,7 +7,6 @@ import {
 import audioError from '../Events/AudioEvents/audioError'
 import audioStateChange from '../Events/AudioEvents/audioStateChange'
 import voiceStateChange from '../Events/VoiceEvents/voiceStateChange'
-import { Collection } from 'discord.js'
 import { Track } from './Track'
 
 export default class MusicSubscribtion {
@@ -31,8 +30,6 @@ export default class MusicSubscribtion {
 		void this.processQueue()
 	}
 	public stop() {
-		this.queueLock = true
-		this.queue = new Array()
 		this.audioPlayer.stop(true)
 	}
 	public async processQueue(): Promise<void> {
@@ -49,9 +46,16 @@ export default class MusicSubscribtion {
 		try {
 			const resource = await nextTrack.createAudioResource()
 			this.audioPlayer.play(resource)
+			if (nextTrack.nextSongs?.length){
+				nextTrack.song = nextTrack.nextSongs.shift()
+				if (nextTrack.nextSongs.length){
+					nextTrack.nextSongs = nextTrack.nextSongs
+				}
+				this.queue.push(nextTrack)
+			}
 			this.queueLock = false
-		} catch (error) {
-			nextTrack.onError(error as Error)
+		} catch (err) {
+			nextTrack.onError(err as Error)
 			this.queueLock = false
 			return this.processQueue()
 		}
