@@ -32,7 +32,10 @@ export class Track implements TrackData {
 	}
 	public async createRawAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise(async (resolve, reject) => {
-			const youtubeId = await this.song?.getYoutubeId()
+			let youtubeId = this.song?.id
+			if (youtubeId && youtubeId.length > 11){
+				youtubeId = (await this.song?.getYoutubeId()) as string
+			}
 			if (!youtubeId) reject(new Error('Cannot create audio resource'))
 			const process = ytdl(
 				`https://www.youtube.com/watch?v=${youtubeId}` as string,
