@@ -2,7 +2,8 @@
 	"discord": {
 		"token": "",
 		"clientId": "",
-		"prefix": "--p"
+		"prefix": "--p",
+		"guildId": ""
 	},
 	"spotify": {
 		"clientId": "",
