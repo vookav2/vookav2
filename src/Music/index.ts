@@ -82,7 +82,9 @@ export default class MusicSubscribtion {
 				(p) => p.id === this.track?.currentSong?.id
 			)
 			this.track.currentSong = this.track.playlist.songs.at(lastIndex + 1)
-			if (!this.track.currentSong) return this.track.onDestroy()
+			if (!this.track.currentSong) {
+				return this.destroy(this.track.message?.guildId as string)
+			}
 			const audioResource = await this.track.createRawAudioResource()
 			if (!audioResource) return
 			this.audioPlayer.play(audioResource)
