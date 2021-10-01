@@ -1,5 +1,5 @@
 import { Guild } from 'discord.js'
-import VookaClient from '../../Client'
+import {VookaClient} from '../../Client'
 import { ClientEventTypes, ExecuteEvent } from '../../Interfaces/Event'
 
 export const name: ClientEventTypes = 'guildCreate'
