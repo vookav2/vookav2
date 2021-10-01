@@ -238,6 +238,18 @@
   dependencies:
     "@types/node" "*"
 
+"@types/spotify-api@*":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@types/spotify-api/-/spotify-api-0.0.11.tgz#5cc45ad6341b5233f4617601dc4826b9e6370473"
+  integrity sha512-ZSEpG22JPMcN+tR0+U3wvmGHF4L+jyh1N+8aFbT6WzdXwPuTgH2iL+wKASkMN79CEntHQTPgBwpywZVDhll0Eg==
+
+"@types/spotify-web-api-node@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@types/spotify-web-api-node/-/spotify-web-api-node-5.0.3.tgz#0968b8063146898056cde826e6e0db9e6884f8e1"
+  integrity sha512-aw7bW/Jxb7urwWLrJutMuTzyiNQVTeO/6/0OaPpDkXKauAPAoO1RiI8bJncoK4umtWTk8oeHqOTYRAhY3DLjCQ==
+  dependencies:
+    "@types/spotify-api" "*"
+
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"
@@ -1017,6 +1029,11 @@ is-unix@~1.0.0:
   resolved "https://registry.yarnpkg.com/is-unix/-/is-unix-1.0.0.tgz#61476db8c1954787ac5f326f38c63bcd9d1dfbd5"
   integrity sha1-YUdtuMGVR4esXzJvOMY7zZ0d+9U=
 
+is-unix@~2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/is-unix/-/is-unix-2.0.1.tgz#d1903ea1da6a2fb75f9ceda1cb1228b17832390b"
+  integrity sha512-RyKp5JtlRnfOvnKtfBMPLw9ocqDe1NlPQ8Bt+geVzKGfMnLGj8z/Y2HOmk/aMf47P4EbrEt9dN6YGTT1fx4mZA==
+
 isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
@@ -1304,7 +1321,7 @@ node-cache@^5.1.2:
   dependencies:
     clone "2.x"
 
-node-fetch@^2.6.1:
+node-fetch@^2.6.1, node-fetch@~2.6.5:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.5.tgz#42735537d7f080a7e5f78b6c549b7146be1742fd"
   integrity sha512-mmlIVHJEu5rnIxgEgez6b9GgWXbkZj5YZ7fx+2r94a2E+Uirsp6HsPTPlomfdHtpt/B0cdKviwkoaM6pyvUOpQ==
@@ -1984,11 +2001,12 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-voosic@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/voosic/-/voosic-1.0.3.tgz#3bb8a052512f5f060c773c461e8d4747f16112e9"
-  integrity sha512-auNAkyibAMQvxMIYNRTMruQAC3uvXwzpKUWhxBRMqyfUueT9xI5DkCC/jk98vChgi+AN7Ga27AI1NNQAeLcjGg==
+voosic@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/voosic/-/voosic-1.1.2.tgz#501df51f4813265061a8dbae4fa85270c7749fc7"
+  integrity sha512-HKAN3A2rAQIvAV1Vz55awAPbsn/ztu0fKPBc1dRByVxtPm68gbkZlCSNaEToWrXd/3cYwmQcb/4H+tkkMsq/dg==
   dependencies:
+    "@types/spotify-web-api-node" "^5.0.3"
     got "^11.8.2"
     node-cache "^5.1.2"
     querystring "^0.2.1"
@@ -2051,6 +2069,18 @@ yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
+
+youtube-dl-exec@^1.2.14:
+  version "1.2.14"
+  resolved "https://registry.yarnpkg.com/youtube-dl-exec/-/youtube-dl-exec-1.2.14.tgz#1eee397a7a914d55d1860bcea56ea049db920b90"
+  integrity sha512-d9vwNjdT7NO/XpLryn3YyusjFNm+DdW5/UKVPFOKEBUsUPkKu//ESjqeI09Ipx/GBZ9xR5BS2HHCkCH2BufVEg==
+  dependencies:
+    bin-version-check-cli "~3.0.0"
+    dargs "~7.0.0"
+    execa "~5.1.0"
+    is-unix "~2.0.1"
+    mkdirp "~1.0.4"
+    node-fetch "~2.6.5"
 
 youtube-dl-exec@^1.2.6:
   version "1.2.6"

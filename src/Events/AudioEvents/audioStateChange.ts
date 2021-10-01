@@ -18,6 +18,8 @@ export default async function (
 		;(oldState.resource as AudioResource<Track>).metadata.onFinish()
 		void musicSubscription.processQueue()
 	} else if (newState.status === AudioPlayerStatus.Playing) {
-		;(newState.resource as AudioResource<Track>).metadata.onStart()
+		;(newState.resource as AudioResource<Track>).metadata.onPlay()
+	} else if (newState.status === AudioPlayerStatus.Paused) {
+		;(newState.resource as AudioResource<Track>).metadata.onPause()
 	}
 }

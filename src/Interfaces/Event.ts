@@ -1,6 +1,5 @@
-import { VoiceConnectionStatus } from '@discordjs/voice'
 import { ClientEvents, Message } from 'discord.js'
-import VookaClient from '../Client'
+import { VookaClient } from '../Client'
 
 export type ClientEventTypes = keyof ClientEvents
 export interface ExecuteEvent {

@@ -2,21 +2,12 @@ import {
 	SlashCommandBuilder,
 	SlashCommandStringOption,
 } from '@discordjs/builders'
-import {
-	entersState,
-	joinVoiceChannel,
-	VoiceConnection,
-	VoiceConnectionStatus,
-} from '@discordjs/voice'
-import {
-	CommandInteraction,
-	GuildMember,
-	InternalDiscordGatewayAdapterCreator,
-	Message,
-} from 'discord.js'
-import VookaClient from '../../Client'
+import { CommandInteraction, GuildMember, Message } from 'discord.js'
+import { VookaClient } from '../../Client'
 import MusicSubscribtion from '../../Music'
 import { Track } from '../../Music/Track'
+import { createPlaylistEmbedOptions } from '../../Helpers/EmbedBuilder'
+import { Strings } from '../../Strings'
 
 export const data = new SlashCommandBuilder()
 	.setName('play')
@@ -33,82 +24,53 @@ export const execute = async (
 	message: Message | CommandInteraction
 ): Promise<void> => {
 	if (message instanceof CommandInteraction) {
-		const query = message.options.getString('query', true)
-		let subscribtion = client.subscribtions.get(message.guildId as string)
-		if (!subscribtion) {
-			if (
-				message.member instanceof GuildMember &&
-				message.member.voice.channel
-			) {
-				const channel = message.member.voice.channel
-				subscribtion = new MusicSubscribtion(
-					joinVoiceChannel({
-						channelId: channel.id,
-						guildId: channel.guild.id,
-						adapterCreator: channel.guild.voiceAdapterCreator,
+		try {
+			const query = message.options.getString('query', true)
+			if (!message.guildId) return
+			const channel = client.channels.cache.get(message.channelId)
+
+			let subscribtion = client.subscribtions.get(message.guildId)
+			if (!(message.member instanceof GuildMember)) return
+
+			if (!subscribtion) {
+				const voiceConnection =
+					await client.voiceManager.createVoiceChannelConnection(message.member)
+				subscribtion = new MusicSubscribtion(client, voiceConnection)
+				client.subscribtions.set(message.guildId, subscribtion)
+			}else{
+				if (subscribtion.track){
+					await message.followUp({content: Strings.GUILD_ALREADY_PLAYING, ephemeral: true})
+					return
+				}
+			}
+
+			const track = await Track.from(query)
+			message
+				.editReply(
+					createPlaylistEmbedOptions(track.playlist, {
+						currentSong: track.playlist.songs.at(0),
 					})
 				)
-				subscribtion.voiceConnection.on('error', client.logger.warn)
-				client.subscribtions.set(channel.guild.id, subscribtion)
-			} else {
-				await message.editReply('Join a voice channel and then try that again!')
-				return
-			}
-		}
-		try {
-			await entersState(
-				subscribtion.voiceConnection,
-				VoiceConnectionStatus.Ready,
-				20e3
-			)
-		} catch (err) {
-			client.logger.error(err)
-			await message.editReply(
-				'Failed to join the voice channel within 20 seconds, please try again later!'
-			)
-			return
-		}
-		try {
-			// Attempt to create a Track from the user's video URL
-			const track = await Track.from(query, {
-				onStart() {
-					message
-						.followUp({ content: 'Now playing!', ephemeral: true })
-						.catch(client.logger.warn)
-				},
-				onFinish() {
-					message
-						.followUp({ content: 'Now finished!', ephemeral: true })
-						.catch(client.logger.warn)
-				},
-				onError(err) {
-					client.logger.warn(err)
-					message
-						.followUp({ content: `Error: ${err.message}`, ephemeral: true })
-						.catch(client.logger.warn)
-				},
-			})
-			if (!track) {
-				message
-					.followUp({
-						content: `Error: Unfortunately, we are under constructing right now. Please wait for next upgrade.`,
-						ephemeral: true,
+				.then((message) => {
+					const collector = (
+						message as Message
+					).createMessageComponentCollector({
+						filter: (i) => i.message.id === message.id,
+						time: track.playlist.duration,
+						componentType: 'BUTTON',
 					})
-					.catch(client.logger.warn)
-				return
-			}
-			subscribtion.enqueue(track)
-			let hasMoreSongs = ''
-			if (track.nextSongs?.length) {
-				hasMoreSongs = ` and ${track.nextSongs.length} mores`
-			}
-			await message.followUp({
-				content: `Enqueued **${track.song?.fullTitle}**${hasMoreSongs}`,
-				ephemeral: false,
-			})
+					subscribtion?.addComponentCollector(collector)
+					track.message = message as Message
+					subscribtion?.start(track)
+				})
+				.catch(() => {
+					throw new Error('Cannot play the song!. Please try again later.')
+				})
+			return
 		} catch (err) {
-			client.logger.error(err)
-			await message.reply('Failed to play track, please try again later!')
+			client.logger.warn(err)
+			message.editReply((err as Error).message)
+			return
 		}
 	}
 }

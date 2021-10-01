@@ -4,20 +4,25 @@ import {
 	createAudioPlayer,
 	VoiceConnection,
 } from '@discordjs/voice'
+import { InteractionCollector, MessageComponentInteraction } from 'discord.js'
+import { Song } from 'voosic'
+import { VookaClient } from '../Client'
 import audioError from '../Events/AudioEvents/audioError'
 import audioStateChange from '../Events/AudioEvents/audioStateChange'
 import voiceStateChange from '../Events/VoiceEvents/voiceStateChange'
+import { Strings } from '../Strings'
 import { Track } from './Track'
 
 export default class MusicSubscribtion {
 	public readonly voiceConnection: VoiceConnection
 	public readonly audioPlayer: AudioPlayer
-	public queue: Array<Track>
+	public track: Track | undefined
 	public readyLock: boolean = false
 	public queueLock: boolean = false
+	public client: VookaClient
 
-	public constructor(voiceConnection: VoiceConnection) {
-		this.queue = new Array()
+	public constructor(client: VookaClient, voiceConnection: VoiceConnection) {
+		this.client = client
 		this.voiceConnection = voiceConnection
 		this.audioPlayer = createAudioPlayer()
 		this.voiceConnection.on('stateChange', voiceStateChange.bind(null, this))
@@ -25,37 +30,66 @@ export default class MusicSubscribtion {
 		this.audioPlayer.on('error', audioError)
 		this.voiceConnection.subscribe(this.audioPlayer)
 	}
-	public enqueue(track: Track) {
-		this.queue.push(track)
+	public start(track: Track) {
+		this.track = track
 		void this.processQueue()
 	}
 	public stop() {
 		this.audioPlayer.stop(true)
 	}
+	public async destroy(guildId: string) {
+		this.client.subscribtions.delete(guildId)
+		await this.track?.onDestroy()
+		this.voiceConnection.destroy()
+	}
+	public async addComponentCollector(
+		collector: InteractionCollector<MessageComponentInteraction>
+	) {
+		collector.on('collect', async (interaction) => {
+			if (!this.track) return
+			try {
+				await interaction.deferReply()
+				this.track.interaction = interaction
+				if (interaction.customId === 'stop') {
+					collector.stop()
+					await this.destroy(interaction.guildId as string)
+				} else if (interaction.customId === 'next') {
+					this.stop()
+				} else if (interaction.customId === 'pause') {
+					this.audioPlayer.pause()
+				} else if (interaction.customId === 'play') {
+					this.audioPlayer.unpause()
+				} else if (interaction.customId === 'lyrics') {
+					
+				}
+				return
+			} catch (err) {
+				return this.track?.onError(new Error(Strings.VOOKA_NOT_PLAYING))
+			}
+		})
+	}
 	public async processQueue(): Promise<void> {
 		if (
+			!this.track ||
 			this.queueLock ||
-			this.audioPlayer.state.status !== AudioPlayerStatus.Idle ||
-			this.queue.length === 0
-		) {
+			this.audioPlayer.state.status !== AudioPlayerStatus.Idle
+		)
 			return
-		}
 		this.queueLock = true
-		const nextTrack = this.queue.shift()
-		if (!nextTrack) return
+
 		try {
-			const resource = await nextTrack.createRawAudioResource()
-			this.audioPlayer.play(resource)
-			if (nextTrack.nextSongs?.length) {
-				nextTrack.song = nextTrack.nextSongs.shift()
-				if (nextTrack.nextSongs.length) {
-					nextTrack.nextSongs = nextTrack.nextSongs
-				}
-				this.queue.push(nextTrack)
-			}
+			const lastIndex = this.track.playlist.songs.findIndex(
+				(p) => p.id === this.track?.currentSong?.id
+			)
+			this.track.currentSong = this.track.playlist.songs.at(lastIndex + 1)
+			if (!this.track.currentSong) return this.track.onDestroy()
+			const audioResource = await this.track.createRawAudioResource()
+			if (!audioResource) return
+			this.audioPlayer.play(audioResource)
 			this.queueLock = false
 		} catch (err) {
-			nextTrack.onError(err as Error)
+			this.client.logger.warn(err)
+			this.track.onError(err as Error)
 			this.queueLock = false
 			return this.processQueue()
 		}

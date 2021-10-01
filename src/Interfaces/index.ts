@@ -1,3 +1,5 @@
-export { Command } from './Command'
+export { Command, CommandManagerOptions } from './Command'
 export { Event } from './Event'
 export { Config } from './Config'
+export { PlaylistEmbedOptions } from './Music'
+export { TrackData, TrackEvent } from './Track'
