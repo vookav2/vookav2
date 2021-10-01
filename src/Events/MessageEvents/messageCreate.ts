@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import VookaClient from '../../Client'
+import {VookaClient} from '../../Client/index'
 import { ClientEventTypes } from '../../Interfaces/Event'
 import { Track } from '../../Music/Track'
 import { config } from '../../util'
@@ -16,9 +16,9 @@ export const execute = async (
 	)
 		return
 
-	Track.from('twenty one pilots').then((res) => {
-		message.reply(res)
-	})
+	// Track.from('twenty one pilots').then((res) => {
+	// 	message.reply(res)
+	// })
 	// const args = message.content
 	// 	.substring(config.discord.prefix.length)
 	// 	.trim()
