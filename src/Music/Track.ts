@@ -4,38 +4,50 @@ import {
 	demuxProbe,
 	StreamType,
 } from '@discordjs/voice'
-import { TrackData, TrackEvent } from '../Interfaces/Track'
 import { raw as ytdl } from 'youtube-dl-exec'
-import Voosic, { Song, createStreamUrl, Playlist, Album, Artist } from 'voosic'
+import Voosic, {
+	Song,
+	Playlist,
+	Album,
+	Artist,
+	SpotifyCredentials,
+} from 'voosic'
 import { config } from '../util'
+import { TrackData } from '../Interfaces'
+import { RosourceType, TrackEvents } from '../Interfaces/Track'
+import { Strings } from '../Strings'
+import { Message, MessageComponentInteraction } from 'discord.js'
+import * as trackEvents from '../Events/track'
+export class Track implements TrackData, TrackEvents {
+	public resource: RosourceType
+	public currentSong: Song | undefined
+	public message: Message | undefined
+	public interaction: MessageComponentInteraction | undefined
 
-const noop = () => {}
-
-export class Track implements TrackData {
-	song!: Song | undefined
-	nextSongs!: Song[]
-	onStart: () => void
-	onFinish: () => void
-	onError: (error: Error) => void
-	private constructor({ onStart, onFinish, onError }: TrackData) {
-		this.onStart = onStart
-		this.onFinish = onFinish
-		this.onError = onError
+	public constructor({ resource }: TrackData) {
+		this.resource = resource
 	}
-	public async createAudioResource(): Promise<AudioResource<Track>> {
-		const youtubeId = await this.song?.getYoutubeId()
-		const streamUrl = await createStreamUrl(youtubeId as string)
-		return createAudioResource(streamUrl as string, {
-			metadata: this,
-			inputType: StreamType.WebmOpus,
-		})
+	public onDestroy(): Promise<void> {
+		return trackEvents.onDestroy(this)
 	}
-	public async createRawAudioResource(): Promise<AudioResource<Track>> {
+	public onPlay(): void {
+		trackEvents.onStart(this)
+	}
+	public onPause(): void {
+		trackEvents.onPause(this)
+	}
+	public onFinish(): void {
+		trackEvents.onFinish(this)
+	}
+	public onError(error: Error): void {
+		trackEvents.onError(this, error)
+	}
+	public async createRawAudioResource(): Promise<
+		AudioResource<Track> | undefined
+	> {
+		if (!this.currentSong) return
 		return new Promise(async (resolve, reject) => {
-			let youtubeId = this.song?.id
-			if (youtubeId && youtubeId.length > 11){
-				youtubeId = (await this.song?.getYoutubeId()) as string
-			}
+			const youtubeId = await this.currentSong?.getYoutubeId()
 			if (!youtubeId) reject(new Error('Cannot create audio resource'))
 			const process = ytdl(
 				`https://www.youtube.com/watch?v=${youtubeId}` as string,
@@ -73,50 +85,19 @@ export class Track implements TrackData {
 				.catch(onError)
 		})
 	}
-	public static async from(
-		any: string,
-		methods?: Pick<Track, TrackEvent>
-	): Promise<Track | null> {
-		const wrappedMethods = {
-			onStart() {
-				wrappedMethods.onStart = noop
-				methods?.onStart()
-			},
-			onFinish() {
-				wrappedMethods.onFinish = noop
-				methods?.onFinish()
-			},
-			onError(err: Error) {
-				wrappedMethods.onError = noop
-				methods?.onError(err)
-			},
-		}
-		const track = new Track(wrappedMethods)
-		const voosic = Voosic({ spotify: config.spotify })
-		const res = await voosic(any)
-		if (res instanceof Song) {
-			track.song = res
-			if (res.nextSongs?.length) {
-				track.nextSongs = res.nextSongs
-				res.nextSongs = res.nextSongs.slice(0, 0)
-			}
-			return track
-		}
-		if (res instanceof Playlist && res.songs?.length) {
-			track.song = res.songs.shift()
-			track.nextSongs = res.songs
-			return track
-		}
-		if (res instanceof Album && res.songs?.length) {
-			track.song = res.songs.shift()
-			track.nextSongs = res.songs
-			return track
-		}
-		if (res instanceof Artist && res.songs?.length) {
-			track.song = res.songs.shift()
-			track.nextSongs = res.songs
-			return track
-		}
-		return null
+	public get playlist(): Playlist {
+		if (this.resource instanceof Playlist) return this.resource
+		else return this.resource.playlist
+	}
+	public static async from(any: string): Promise<Track> {
+		const voosic = Voosic({ spotify: config.spotify as SpotifyCredentials })
+		return voosic(any)
+			.then((response) => {
+				if (!response) throw new Error(Strings.NO_MUSIC_FOUND)
+				return response
+			})
+			.then((resource) => {
+				return new Track({ resource })
+			})
 	}
 }

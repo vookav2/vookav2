@@ -1,11 +1,11 @@
-interface DiscordConfig {
+export interface DiscordConfig {
 	token: string
 	clientId: string
 	prefix: string
 	guildId?: string
 }
 
-interface SpotifyConfig {
+export interface SpotifyConfig {
 	clientId: string
 	clientSecret: string
 }

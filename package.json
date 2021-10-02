@@ -21,7 +21,8 @@
 		"libsodium-wrappers": "^0.7.9",
 		"monk": "^7.3.4",
 		"ts-node": "^10.2.1",
-		"voosic": "^1.0.3"
+		"voosic": "^1.1.2",
+		"youtube-dl-exec": "^1.2.14"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",

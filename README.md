@@ -6,7 +6,8 @@
 Flexible query resolver for search music resources from youtube and spotify.
 
 ## Todo
+
 - [ ] Music
-   - [x] Play music from user text message
-   - [ ] Play music from voice recognition
+  - [x] Play music from user text message
+  - [ ] Play music from voice recognition
 - [ ] Add wake word to call this bot to join voice channel
