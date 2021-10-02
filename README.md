@@ -12,13 +12,12 @@ Discord music bot with Audio controls, related song, and flexible query resolver
 
 ## Todo
 
-- [ ] Audio Controls
+- [x] Audio Controls
   - [x] Play
   - [x] Pause
   - [x] Stop
   - [x] Next
-  - [ ] Previous
-  - [ ] Lyrics
+  - [x] Lyrics
 - [ ] Music
   - [x] Play music from user text message
   - [ ] Play music from voice recognition
