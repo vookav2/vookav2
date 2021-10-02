@@ -57,7 +57,6 @@ export class CommandManager {
 	// 	)
 	// }
 
-	
 	public async updateGuildCommands(guildId: string) {
 		// await this.deleteGuildCommands(guildId)
 		try {
@@ -75,14 +74,20 @@ export class CommandManager {
 			return
 		} catch (error) {}
 	}
-	public async updateGuildsCommands(){
+	public async updateGuildsCommands() {
 		try {
 			const guilds = await this.client.guilds.fetch()
-			this.client.logger.info(`Discord: Start update ${guilds.size} guild(s) commands.`)
-			await Promise.allSettled(guilds.mapValues(async (v) => {
-				this.client.logger.info(`Discord: [${v.name}] Updating guild commands.`)
-				await this.updateGuildCommands(v.id)
-			}))
+			this.client.logger.info(
+				`Discord: Start update ${guilds.size} guild(s) commands.`
+			)
+			await Promise.allSettled(
+				guilds.mapValues(async (v) => {
+					this.client.logger.info(
+						`Discord: [${v.name}] Updating guild commands.`
+					)
+					await this.updateGuildCommands(v.id)
+				})
+			)
 		} catch (error) {}
 	}
 	public async deleteGuildCommands(guildId: string): Promise<void> {
@@ -144,7 +149,7 @@ export class CommandManager {
 	}
 	public async refreshCommands(): Promise<void> {
 		this.client.logger.info(`Discord: Refreshing slash commands`)
-			// await this.updateApplicationCommands()
+		// await this.updateApplicationCommands()
 		await this.updateGuildsCommands()
 		// this.client.logger.success(`Discord: Successfully refresh slash (/) commands`)
 	}

@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import {VookaClient} from '../../Client/index'
+import { VookaClient } from '../../Client/index'
 import { ClientEventTypes } from '../../Interfaces/Event'
 import { Track } from '../../Music/Track'
 import { config } from '../../util'

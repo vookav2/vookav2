@@ -19,8 +19,8 @@ export async function importFiles(
 export function paginateArray<T>(
 	items: T[],
 	options: {
-		page: number,
-		perPage: number,
+		page: number
+		perPage: number
 	}
 ) {
 	if (options.page < 1) options.page = 1

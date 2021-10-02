@@ -14,12 +14,8 @@ export class VoiceManager {
 		this.client = client
 	}
 	public async createVoiceChannelConnection(member: GuildMember) {
-		// if (!member.voice.channel) throw new Error(Strings.MEMBER_NO_VOICE_CHANNEL);
-		const voiceChannelId = '762734379796529192'
-		const voiceChannel = this.client.channels.cache.get(
-			voiceChannelId
-		) as VoiceChannel
-		// const voiceChannel = member.voice.channel
+		if (!member.voice.channel) throw new Error(Strings.MEMBER_NO_VOICE_CHANNEL)
+		const voiceChannel = member.voice.channel
 		const voiceConnection = joinVoiceChannel({
 			guildId: voiceChannel.guildId,
 			channelId: voiceChannel.id,

@@ -1,11 +1,11 @@
-import { userMention } from '@discordjs/builders'
+import { userMention, bold, italic, blockQuote } from '@discordjs/builders'
 import {
 	MessageActionRow,
 	MessageButton,
 	MessageEmbed,
 	MessageOptions,
 } from 'discord.js'
-import { Playlist, Song } from 'voosic'
+import { Playlist, Song, Lyrics } from 'voosic'
 import { PlaylistEmbedOptions } from '../Interfaces/Music'
 import { paginateArray } from '../util'
 
@@ -55,8 +55,10 @@ export function createPlaylistEmbedOptions(
 		perPage: 5,
 		...options,
 	}
-	const currentSongIndex = playlist.songs.findIndex((p) => p.id === options?.currentSong?.id)
-	options.page = Math.ceil((currentSongIndex+1) / (options.perPage as number))
+	const currentSongIndex = playlist.songs.findIndex(
+		(p) => p.id === options?.currentSong?.id
+	)
+	options.page = Math.ceil((currentSongIndex + 1) / (options.perPage as number))
 
 	const iconStatus = {
 		loading: '[🔄]',
@@ -66,8 +68,8 @@ export function createPlaylistEmbedOptions(
 
 	const contents = ['`Queue(s) List ◽️◽️◽️◽️◽️◽️`\n']
 	const paginate = paginateArray(playlist.songs, {
-		page: options.page as number, 
-		perPage: options.perPage as number
+		page: options.page as number,
+		perPage: options.perPage as number,
 	})
 	const songs = paginate.items
 
@@ -133,11 +135,28 @@ export function createPlaylistButtons(
 			.setLabel('Lyrics')
 			.setCustomId('lyrics')
 			.setStyle(1)
-			.setDisabled(true),
+			.setDisabled(disable),
 		new MessageButton()
 			.setLabel('Stop')
 			.setCustomId('stop')
 			.setStyle(4)
 			.setDisabled(disable),
 	]
+}
+export function createLyricsContent(lyrics: Lyrics, song: Song): string[] {
+	const source = italic(`Source: ${lyrics.source.name}`)
+	const title = bold(`${song.title} Lyrics`)
+	if (lyrics.lyrics.length > 2000) {
+		const lyricsSplitted = lyrics.lyrics.split('\n\n')
+		const length = Math.ceil(lyricsSplitted.length / 2)
+		const lyricsChunk = [
+			lyricsSplitted.slice(0, length),
+			lyricsSplitted.slice(length),
+		]
+		return lyricsChunk.map((x) => {
+			return blockQuote(`${title}\n\n${x.join('\n\n').trim()}\n\n${source}`)
+		})
+	} else {
+		return [blockQuote(`${title}\n\n${lyrics.lyrics.trim()}\n\n${source}`)]
+	}
 }

@@ -7,6 +7,7 @@ Discord music bot with Audio controls, related song, and flexible query resolver
 [Invite bot to your server](https://discord.com/api/oauth2/authorize?client_id=857320531405701120&permissions=0&scope=bot%20applications.commands). Please allow the bot to use application commands permission.
 
 ## Screnshot
+
 ![image](https://user-images.githubusercontent.com/26916086/135719326-5f25a0ca-5ae6-455b-8ddc-3433339f3014.png)
 
 ## Todo

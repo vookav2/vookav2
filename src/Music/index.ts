@@ -4,15 +4,17 @@ import {
 	createAudioPlayer,
 	VoiceConnection,
 } from '@discordjs/voice'
-import { InteractionCollector, MessageComponentInteraction } from 'discord.js'
-import { Song } from 'voosic'
+import {
+	InteractionCollector,
+	Message,
+	MessageComponentInteraction,
+} from 'discord.js'
 import { VookaClient } from '../Client'
 import audioError from '../Events/AudioEvents/audioError'
 import audioStateChange from '../Events/AudioEvents/audioStateChange'
 import voiceStateChange from '../Events/VoiceEvents/voiceStateChange'
 import { Strings } from '../Strings'
 import { Track } from './Track'
-
 export default class MusicSubscribtion {
 	public readonly voiceConnection: VoiceConnection
 	public readonly audioPlayer: AudioPlayer
@@ -60,7 +62,25 @@ export default class MusicSubscribtion {
 				} else if (interaction.customId === 'play') {
 					this.audioPlayer.unpause()
 				} else if (interaction.customId === 'lyrics') {
-					
+					try {
+						if (this.track.lyricsMessages) {
+							return await interaction.deleteReply()
+						}
+						const lyrics = await this.track.resolveLyrics()
+						if (!lyrics) {
+							await interaction.followUp({
+								content: '`No lyrics found.`',
+								ephemeral: true,
+							})
+						} else {
+							const promises = lyrics.map((x) => interaction.followUp(x))
+							const messages = await Promise.all(promises)
+							this.track.lyricsMessages = messages as Message[]
+						}
+					} catch (error) {
+						console.warn(error)
+						await interaction.deleteReply()
+					}
 				}
 				return
 			} catch (err) {

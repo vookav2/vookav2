@@ -37,9 +37,12 @@ export const execute = async (
 					await client.voiceManager.createVoiceChannelConnection(message.member)
 				subscribtion = new MusicSubscribtion(client, voiceConnection)
 				client.subscribtions.set(message.guildId, subscribtion)
-			}else{
-				if (subscribtion.track){
-					await message.followUp({content: Strings.GUILD_ALREADY_PLAYING, ephemeral: true})
+			} else {
+				if (subscribtion.track) {
+					await message.followUp({
+						content: Strings.GUILD_ALREADY_PLAYING,
+						ephemeral: true,
+					})
 					return
 				}
 			}

@@ -11,7 +11,9 @@ export const onStart = (track: Track) => {
 	track.message?.edit(messageOptions)
 	if (track.interaction) {
 		track.interaction.deleteReply()
-		track.interaction = undefined
+			.then(() => {
+				track.interaction = undefined
+			})
 	}
 }
 
@@ -23,11 +25,19 @@ export const onPause = (track: Track) => {
 	track.message?.edit(messageOptions)
 	if (track.interaction) {
 		track.interaction.deleteReply()
-		track.interaction = undefined
+			.then(() => {
+				track.interaction = undefined
+			})
 	}
 }
 
-export const onFinish = (track: Track) => {}
+export const onFinish = (track: Track) => {
+	if (track.lyricsMessages) {
+		Promise.all(track.lyricsMessages.map((x) => x.delete())).then(() => {
+			track.lyricsMessages = undefined
+		})
+	}
+}
 
 export const onError = (track: Track, error: Error) => {}
 
@@ -38,9 +48,11 @@ export const onDestroy = async (track: Track) => {
 			await wait(1e3)
 			if (track.interaction) {
 				await track.interaction.deleteReply()
-				track.interaction = undefined
 			}
-			return message.delete()
+			if (track.lyricsMessages) {
+				await Promise.all(track.lyricsMessages.map((x) => x.delete()))
+			}
+			return await message.delete()
 		})
 		.catch(() => {})
 }
