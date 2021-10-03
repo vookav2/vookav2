@@ -1888,10 +1888,10 @@ songlyrics@2.0.3:
     cheerio "^1.0.0-rc.10"
     got "^11.8.2"
 
-songlyrics@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/songlyrics/-/songlyrics-2.2.3.tgz#617fa41f9ecda487b8bb1ce1c14fb3b604f606ba"
-  integrity sha512-dvvTnHUeodIN261YtZmtA7CtX1B4GqWuU/ZEQ1ufK5v9St67JB8tTd87TocWiYcQBOj/mGuCzcsrJAtQxnpgAg==
+songlyrics@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/songlyrics/-/songlyrics-2.2.4.tgz#8a1f872fad55e061b1870dad4f79a1f3b3a4b170"
+  integrity sha512-gWtM65Y/93nElTeCUqfutfKYhi2L/bNL41q7nGujiGwdD+DI2pnMO6vaMk24sjQbpFWPJglrD006cVSWoMDtOA==
   dependencies:
     cheerio "^1.0.0-rc.10"
     duck-duck-scrape "^2.1.5"
