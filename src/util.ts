@@ -36,4 +36,10 @@ export function paginateArray<T>(
 	}
 }
 
+export function cleanSongTitle(title: string): string{
+	const regexp = /\s*\(.*\)|\'|\"|\s*\[.*\]|\s*\{.*\}|\s*\-.*/g
+	title = title.replace(regexp, '')
+	return title.toLowerCase()
+}
+
 export const config: Config = configJson

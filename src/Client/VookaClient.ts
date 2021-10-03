@@ -1,15 +1,17 @@
 import { Client, Collection, Intents, Snowflake } from 'discord.js'
 import { Command, Config, Event } from '../Interfaces'
-import consola, { Consola } from 'consola'
 import { config } from '../util'
-import MusicSubscribtion from '../Music'
 import { CommandManager, VoiceManager } from '.'
+import consola, { Consola } from 'consola'
+import MusicSubscribtion from '../Music'
+import NodeCache from 'node-cache'
 
 export class VookaClient extends Client {
 	public logger: Consola = consola
 	public commands: Collection<string, Command> = new Collection()
 	public events: Collection<string, Event> = new Collection()
 	public aliases: Collection<string, Command> = new Collection()
+	public cache: NodeCache
 	public subscribtions: Collection<Snowflake, MusicSubscribtion> =
 		new Collection()
 	public commandManager: CommandManager
@@ -31,6 +33,7 @@ export class VookaClient extends Client {
 			discord: this.config.discord,
 		})
 		this.voiceManager = new VoiceManager(this)
+		this.cache = new NodeCache({stdTTL: 0, checkperiod: 0, useClones: false})
 		this.logger.success('Discord: Client created')
 	}
 	/**

@@ -14,6 +14,7 @@ import audioError from '../Events/AudioEvents/audioError'
 import audioStateChange from '../Events/AudioEvents/audioStateChange'
 import voiceStateChange from '../Events/VoiceEvents/voiceStateChange'
 import { Strings } from '../Strings'
+import { cleanSongTitle } from '../util'
 import { Track } from './Track'
 export default class MusicSubscribtion {
 	public readonly voiceConnection: VoiceConnection
@@ -66,7 +67,7 @@ export default class MusicSubscribtion {
 						if (this.track.lyricsMessages) {
 							return await interaction.deleteReply()
 						}
-						const lyrics = await this.track.resolveLyrics()
+						const lyrics = await this.track.resolveLyrics(this.client)
 						if (!lyrics) {
 							await interaction.followUp({
 								content: '`No lyrics found.`',

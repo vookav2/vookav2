@@ -6,13 +6,15 @@ import {
 } from '@discordjs/voice'
 import { raw as ytdl } from 'youtube-dl-exec'
 import Voosic, { Song, Playlist, SpotifyCredentials } from 'voosic'
-import { config } from '../util'
+import { cleanSongTitle, config } from '../util'
 import { TrackData } from '../Interfaces'
 import { RosourceType, TrackEvents } from '../Interfaces/Track'
 import { Strings } from '../Strings'
 import { Message, MessageComponentInteraction } from 'discord.js'
 import * as trackEvents from '../Events/track'
 import { createLyricsContent } from '../Helpers/EmbedBuilder'
+import songlyrics, { Lyrics } from 'songlyrics'
+import { VookaClient } from '../Client'
 export class Track implements TrackData, TrackEvents {
 	public resource: RosourceType
 	public currentSong: Song | undefined
@@ -38,10 +40,17 @@ export class Track implements TrackData, TrackEvents {
 	public onError(error: Error): void {
 		trackEvents.onError(this, error)
 	}
-	public async resolveLyrics(): Promise<string[] | undefined> {
+	public async resolveLyrics(client: VookaClient): Promise<string[] | undefined> {
 		if (!this.currentSong) return
 		if (!this.message) return
-		const lyrics = await this.currentSong.getLyrics()
+		const songTitle = cleanSongTitle(this.currentSong.title)
+		if (client.cache.has(songTitle)){
+			console.log('Get lyrics from cache')
+			return createLyricsContent(client.cache.get(songTitle) as Lyrics, this.currentSong)
+		}
+		const lyrics = await songlyrics(songTitle)
+		if (!lyrics.lyrics) return undefined
+		client.cache.set(songTitle, lyrics)
 		return createLyricsContent(lyrics, this.currentSong)
 	}
 	public async createRawAudioResource(): Promise<
