@@ -33,7 +33,7 @@ export const onPause = (track: Track) => {
 
 export const onFinish = (track: Track) => {
 	if (track.lyricsMessages) {
-		Promise.all(track.lyricsMessages.map((x) => x.delete())).then(() => {
+		Promise.all(track.lyricsMessages.map(async (x) => await x.delete())).then(() => {
 			track.lyricsMessages = undefined
 		})
 	}
@@ -50,7 +50,7 @@ export const onDestroy = async (track: Track) => {
 				await track.interaction.deleteReply()
 			}
 			if (track.lyricsMessages) {
-				await Promise.all(track.lyricsMessages.map((x) => x.delete()))
+				await Promise.all(track.lyricsMessages.map(async (x) => await x.delete()))
 			}
 			return await message.delete()
 		})
