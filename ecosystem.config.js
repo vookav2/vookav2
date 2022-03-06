@@ -4,7 +4,7 @@ module.exports = {
 			name: 'vookav2',
 			script: './build/index.js',
 			// max_memory_restart: '700M',
-			source_map_support: false,
+			source_map_support: true,
 			autorestart: true,
 			env_production: {
 				NODE_ENV: 'production',

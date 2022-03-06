@@ -1,11 +1,8 @@
 node_modules
 .env
 config.json
-build
-prod
 dist
 .vscode
 dump
 yarn.error.log
 .DS_Store
-./build
