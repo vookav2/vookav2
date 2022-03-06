@@ -4,17 +4,20 @@ import {
 	VoiceConnection,
 	VoiceConnectionStatus,
 } from '@discordjs/voice'
-import { GuildMember, VoiceChannel } from 'discord.js'
+import { GuildMember } from 'discord.js'
 import { VookaClient } from '.'
-import { Strings } from '../Strings'
+import { Strings } from '../strings'
 
-export class VoiceManager {
-	private client: VookaClient
-	constructor(client: VookaClient) {
-		this.client = client
+export default class VoiceManager {
+	private ctx: VookaClient
+
+	public constructor(_ctx: VookaClient) {
+		this.ctx = _ctx
 	}
-	public async createVoiceChannelConnection(member: GuildMember) {
+
+	public async createVoiceConnection(member: GuildMember) {
 		if (!member.voice.channel) throw new Error(Strings.MEMBER_NO_VOICE_CHANNEL)
+
 		const voiceChannel = member.voice.channel
 		const voiceConnection = joinVoiceChannel({
 			guildId: voiceChannel.guildId,
@@ -23,13 +26,16 @@ export class VoiceManager {
 			selfDeaf: true,
 			selfMute: false,
 		})
-		voiceConnection.on('error', this.client.logger.warn)
-		return entersState(
-			voiceConnection,
-			VoiceConnectionStatus.Ready,
-			20e3
-		).catch(() => {
+		voiceConnection.on('error', this.ctx.logger.error)
+		try {
+			return await entersState(
+				voiceConnection,
+				VoiceConnectionStatus.Ready,
+				20e3
+			)
+		} catch {
 			throw new Error(Strings.VOICE_CONNECTING_TIMEOUT)
-		})
+			voiceConnection.destroy()
+		}
 	}
 }
