@@ -1,3 +1,5 @@
+import { promisify } from 'util'
+import glob from 'glob'
 import { userMention, bold, italic, blockQuote } from '@discordjs/builders'
 import {
 	MessageActionRow,
@@ -5,9 +7,39 @@ import {
 	MessageEmbed,
 	MessageOptions,
 } from 'discord.js'
+import { PlaylistEmbedOptions } from './contracts'
 import { Playlist, Song, Lyrics } from 'voosic'
-import { PlaylistEmbedOptions } from '../Interfaces/Music'
-import { paginateArray } from '../util'
+
+const globPromisify = promisify(glob)
+export const wait = promisify(setTimeout)
+
+export async function importFiles(
+	dir: string,
+	callback: (filePath: string) => Awaited<void>
+) {
+	const filePaths: string[] = await globPromisify(`${dir}/**/*{.ts, .js}`)
+	filePaths.forEach(callback)
+}
+
+export function paginateArray<T>(
+	items: T[],
+	options: {
+		page: number
+		perPage: number
+	}
+) {
+	if (options.page < 1) options.page = 1
+	if (options.perPage < 1) options.perPage = 1
+	const offset = (options.page - 1) * options.perPage
+	return {
+		items: items.slice(offset).slice(0, options.perPage),
+		offset,
+		page: options.page,
+		perPage: options.perPage,
+		pageTotal: Math.ceil(items.length / options.perPage),
+		totalItems: items.length,
+	}
+}
 
 export function createSongEmbed(song: Song): MessageEmbed {
 	let thumbnail
