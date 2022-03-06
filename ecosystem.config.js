@@ -2,13 +2,11 @@ module.exports = {
 	apps: [
 		{
 			name: 'vookav2',
-			script: './src/index.ts',
+			script: './build/index.js',
 			cwd: '~/app/vookav2/',
-			interpreter: 'ts-node',
 			// max_memory_restart: '700M',
 			source_map_support: false,
 			autorestart: true,
-			interpreter_args: '--project tsconfig.prod.json',
 			env_production: {
 				NODE_ENV: 'production',
 			},
