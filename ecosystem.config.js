@@ -3,7 +3,6 @@ module.exports = {
 		{
 			name: 'vookav2',
 			script: './build/index.js',
-			cwd: '~/app/vookav2/',
 			// max_memory_restart: '700M',
 			source_map_support: false,
 			autorestart: true,
