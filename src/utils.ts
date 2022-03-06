@@ -15,9 +15,9 @@ export const wait = promisify(setTimeout)
 
 export async function importFiles(
 	dir: string,
-	callback: (filePath: string) => Awaited<void>
+	callback: (filePath: string) => Promise<void>
 ) {
-	const filePaths: string[] = await globPromisify(`${dir}/**/*{.ts, .js}`)
+	const filePaths: string[] = await globPromisify(`${dir}/**/*{.ts,.js}`)
 	filePaths.forEach(callback)
 }
 

@@ -12,7 +12,7 @@ export default class CommandsManager {
 	public constructor(_ctx: VookaClient) {
 		this.ctx = _ctx
 
-		this.restApi = new REST({ version: '9' }).setToken(this.ctx.config.token)
+		this.restApi = new REST({ version: '9' }).setToken(this.ctx.config?.token as string)
 	}
 
 	public async loadFiles() {
@@ -52,7 +52,7 @@ export default class CommandsManager {
 		try {
 			const commands = this.getJSONCommands()
 			await this.restApi.put(
-				Routes.applicationGuildCommands(this.ctx.config.clientId, guildId),
+				Routes.applicationGuildCommands(this.ctx.config?.clientId as string, guildId),
 				{ body: commands }
 			)
 			this.ctx.logger.success(
@@ -71,7 +71,7 @@ export default class CommandsManager {
 		try {
 			const commands = this.getJSONCommands()
 			await this.restApi.put(
-				Routes.applicationCommands(this.ctx.config.clientId),
+				Routes.applicationCommands(this.ctx.config?.clientId as string),
 				{ body: commands }
 			)
 			this.ctx.logger.success(

@@ -36,7 +36,7 @@ export const execute = async function (interaction: CommandInteraction) {
 
 			this.radioSubscriptions.set(interaction.guildId, radioSubscription)
 		} catch (err) {
-			await interaction.editReply(err.message || err)
+			await interaction.editReply((err as Error).message || err as string)
 			return
 		}
 	} else {
@@ -60,15 +60,17 @@ export const execute = async function (interaction: CommandInteraction) {
 					})
 				)) as Message
 		)
-		const collector = track.trackMessage.createMessageComponentCollector({
-			filter: (i) => i.message.id === track.trackMessage.id,
+		const collector = track.trackMessage?.createMessageComponentCollector({
+			filter: (i) => i.message.id === track.trackMessage?.id,
 			time: track.playlist.duration || 0,
 			componentType: 'BUTTON',
 		})
+
+		if (!collector) return
 		radioSubscription.addComponentCreator(collector)
 		await radioSubscription.start(track)
 	} catch (err) {
-		await interaction.editReply(err.message || err)
+		await interaction.editReply((err as Error).message || err as string)
 		return
 	}
 }

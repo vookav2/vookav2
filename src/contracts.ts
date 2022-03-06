@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { CommandInteraction, Message } from 'discord.js'
 import { AudioResource } from '@discordjs/voice'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Artist, Album, Playlist, Song } from 'voosic'
@@ -31,7 +31,7 @@ export interface ITrack {
 
 export interface ICommand {
 	data: SlashCommandBuilder
-	execute: () => Promise<void>
+	execute: (interaction: CommandInteraction) => Promise<void>
 }
 
 export interface IEvent {
