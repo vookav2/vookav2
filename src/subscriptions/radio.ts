@@ -96,12 +96,12 @@ export class Radio {
 	public ctx: VookaClient
 	public readonly voiceConnection: VoiceConnection
 	public readonly audioPlayer: AudioPlayer
-	public track: ITrack
+	public track: ITrack | undefined
 
 	public locked: boolean = false
 	private queueLocked: boolean = false
 
-	public constructor(_ctx, _voiceConnection: VoiceConnection) {
+	public constructor(_ctx: VookaClient, _voiceConnection: VoiceConnection) {
 		this.ctx = _ctx
 		this.voiceConnection = _voiceConnection
 		this.voiceConnection.on('stateChange', onVoiceStateChange.bind(this))
@@ -186,7 +186,7 @@ export class Radio {
 
 			this.queueLocked = false
 		} catch (err) {
-			this.track.onError(err)
+			this.track.onError(err as Error)
 			this.queueLocked = false
 			await this.processQueue()
 		}

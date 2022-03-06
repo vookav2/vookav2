@@ -9,16 +9,16 @@ process.on('warning', console.warn)
 
 export class VookaClient extends Client {
 	public logger: Consola
-	public config: IConfig
-	public commandsManager: CommandsManager
-	public voiceManager: VoiceManager
+	public config: IConfig | undefined
+	public commandsManager: CommandsManager | undefined
+	public voiceManager: VoiceManager | undefined
 
 	public commands: Collection<string, ICommand> = new Collection()
 	public events: Collection<string, IEvent> = new Collection()
 	public radioSubscriptions: Collection<Snowflake, Radio> = new Collection()
 	// public musicSubscriptions: Collection<Snowflake, string> = new Collection()
 
-	public clientId: string
+	public clientId: string | undefined
 
 	public constructor() {
 		super({
@@ -43,7 +43,7 @@ export class VookaClient extends Client {
 		client.config = require('../../config.json')
 		client.commandsManager = new CommandsManager(client)
 		client.voiceManager = new VoiceManager(client)
-		client.clientId = client.config.clientId
+		client.clientId = client.config?.clientId
 
 		await client.commandsManager.loadFiles()
 
@@ -64,6 +64,6 @@ export class VookaClient extends Client {
 	public async connect() {
 		this.logger.info('[Vooka Client] Connecting...')
 
-		return this.login(this.config.token)
+		return this.login(this.config?.token)
 	}
 }

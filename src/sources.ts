@@ -15,49 +15,6 @@ const resolveQueryFromYoutube = async (query: string) => {
 	return await new Youtube().resolve(query)
 }
 
-const createProbeAndAudioSource = function (
-	ytId: string
-): Promise<AudioResource<ITrack>> {
-	return new Promise((resolve, reject) => {
-		const raw = ytdl(
-			`https://www.youtube.com/watch?v=${ytId}` as string,
-			{
-				o: '-',
-				q: '',
-				f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-				r: '100K',
-			},
-			{ stdio: ['ignore', 'pipe', 'ignore'] }
-		)
-
-		if (!raw.stdout) {
-			return reject(new Error('[createRawSource] Invalid music information!'))
-		}
-
-		const stream = raw.stdout
-		const onStreamError = (err: Error) => {
-			if (!raw.killed) raw.kill()
-			stream.resume()
-			return reject(`[createRawSource] Stream error, skipped!`)
-		}
-		const onStreamSpawn = async () => {
-			try {
-				const { stream: probeStream, type } = await demuxProbe(stream)
-				return resolve(
-					createAudioResource(probeStream, {
-						metadata: this,
-						inputType: type,
-					})
-				)
-			} catch (err) {
-				return onStreamError(err)
-			}
-		}
-
-		raw.once('spawn', onStreamSpawn).catch(onStreamError)
-	})
-}
-
 export const createTrack = async (
 	ctx: VookaClient,
 	query: string,
@@ -73,7 +30,48 @@ export const createTrack = async (
 		metadata: undefined,
 		guildId: null,
 		playlist,
-		createProbeAndAudioSource,
+		createProbeAndAudioSource: function (
+			ytId: string
+		): Promise<AudioResource<ITrack>> {
+			return new Promise((resolve, reject) => {
+				const raw = ytdl(
+					`https://www.youtube.com/watch?v=${ytId}` as string,
+					{
+						o: '-',
+						q: '',
+						f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+						r: '100K',
+					},
+					{ stdio: ['ignore', 'pipe', 'ignore'] }
+				)
+		
+				if (!raw.stdout) {
+					return reject(new Error('[createRawSource] Invalid music information!'))
+				}
+		
+				const stream = raw.stdout
+				const onStreamError = (err: Error) => {
+					if (!raw.killed) raw.kill()
+					stream.resume()
+					return reject(`[createRawSource] Stream error, skipped!`)
+				}
+				const onStreamSpawn = async () => {
+					try {
+						const { stream: probeStream, type } = await demuxProbe(stream)
+						return resolve(
+							createAudioResource(probeStream, {
+								metadata: this,
+								inputType: type,
+							})
+						)
+					} catch (err) {
+						return onStreamError(err as Error)
+					}
+				}
+		
+				raw.once('spawn', onStreamSpawn).catch(onStreamError)
+			})
+		},
 		onPrepare: async function () {
 			this.trackMessage = await message(playlist)
 			this.guildId = this.trackMessage?.guildId
@@ -103,7 +101,7 @@ export const createTrack = async (
 		onDestroy: async function () {
 			await this.trackMessage?.delete()
 			await this.onFinish()
-			this.ctx.radioSubscriptions.delete(this.guildId)
+			this.ctx.radioSubscriptions.delete(this.guildId as string)
 		},
 		onError: async function (err: Error) {
 			if (this.ctx.logger) this.ctx.logger.error(`[createTrack] ${err}`)

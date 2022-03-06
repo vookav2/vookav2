@@ -10,6 +10,7 @@
 		"start": "ts-node --project tsconfig.prod.json src/index.ts",
 		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
 		"lint": "prettier --write .",
+		"tsc": "tsc",
 		"test": "mocha -r ts-node/register **/*.spec.ts"
 	},
 	"dependencies": {
