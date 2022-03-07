@@ -39,7 +39,7 @@ export const execute = async function (interaction: CommandInteraction) {
 			await interaction.editReply((err as Error).message || err as string)
 			return
 		}
-	} else {
+	} else if (radioSubscription.track) {
 		await interaction.followUp({
 			content: Strings.GUILD_ALREADY_PLAYING_RADIO,
 			ephemeral: true,
