@@ -30,7 +30,7 @@ const execute = async function (interaction) {
             return;
         }
     }
-    else {
+    else if (radioSubscription.track) {
         await interaction.followUp({
             content: strings_1.Strings.GUILD_ALREADY_PLAYING_RADIO,
             ephemeral: true,
