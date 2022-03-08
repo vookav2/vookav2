@@ -177,8 +177,6 @@ export class Radio {
 				return
 			}
 
-			console.log(this.track.metadata.id)
-
 			const audioResource = await this.track.createProbeAndAudioSource(
 				this.track.metadata.id
 			)
