@@ -1,4 +1,4 @@
-import { CommandInteraction, Message } from 'discord.js'
+import { CommandInteraction, Message, MessageComponentInteraction } from 'discord.js'
 import { AudioResource } from '@discordjs/voice'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Artist, Album, Playlist, Song } from 'voosic'
@@ -19,8 +19,10 @@ export interface ITrack {
 	playlist: Playlist
 	guildId: string | null
 	trackMessage?: Message
+	lyricsMessages?: Message[]
 
 	createProbeAndAudioSource: (ytId: string) => Promise<AudioResource<ITrack>>
+	pleaseSendMeTheLyrics: (message: MessageComponentInteraction) => Promise<void>
 	onPrepare: () => Promise<void>
 	onPlay: () => Promise<void>
 	onPause: () => Promise<void>

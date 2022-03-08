@@ -146,7 +146,7 @@ export class Radio {
 							this.audioPlayer.pause(true)
 							break
 						case 'lyrics':
-							interaction.editReply('`Lyrics not implemented yet.`')
+							this.track.pleaseSendMeTheLyrics(interaction)
 							return
 					}
 				} catch (err) {
@@ -176,6 +176,8 @@ export class Radio {
 				this.voiceConnection.destroy()
 				return
 			}
+
+			console.log(this.track.metadata.id)
 
 			const audioResource = await this.track.createProbeAndAudioSource(
 				this.track.metadata.id

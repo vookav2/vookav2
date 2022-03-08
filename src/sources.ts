@@ -8,8 +8,9 @@ import { ITrack } from './contracts'
 import { VookaClient } from './client'
 import { Youtube, Playlist } from 'voosic'
 import { Strings } from './strings'
-import { Message } from 'discord.js'
-import { createPlaylistEmbedOptions } from './utils'
+import { Message, MessageComponentInteraction } from 'discord.js'
+import { createLyricsContent, createPlaylistEmbedOptions } from './utils'
+import songlyrics from 'songlyrics'
 
 const resolveQueryFromYoutube = async (query: string) => {
 	return await new Youtube().resolve(query)
@@ -44,14 +45,15 @@ export const createTrack = async (
 					},
 					{ stdio: ['ignore', 'pipe', 'ignore'] }
 				)
-		
+
 				if (!raw.stdout) {
 					return reject(new Error('[createRawSource] Invalid music information!'))
 				}
-		
+
 				const stream = raw.stdout
 				const onStreamError = (err: Error) => {
-					if (!raw.killed) raw.kill()
+					if (!raw.killed)
+						raw.kill()
 					stream.resume()
 					return reject(`[createRawSource] Stream error, skipped!`)
 				}
@@ -68,9 +70,28 @@ export const createTrack = async (
 						return onStreamError(err as Error)
 					}
 				}
-		
+
 				raw.once('spawn', onStreamSpawn).catch(onStreamError)
 			})
+		},
+		pleaseSendMeTheLyrics: async function(message: MessageComponentInteraction) {
+			if (this.lyricMessages && this.lyricMessages.length) {
+				message.deleteReply()
+				return
+			}
+			if (this.metadata) {
+				try {
+					const lyrics = await songlyrics(this.metadata.title)
+					const splitLyrics = createLyricsContent(lyrics, this.metadata)
+					this.lyricsMessages = await Promise.all(
+						splitLyrics.map((x) => message.followUp(x))
+					)
+					return
+				} catch (err) {}
+			}
+			if (message.deferred) {
+				message.followUp(Strings.NO_LYRICS_FOUND)
+			}
 		},
 		onPrepare: async function () {
 			this.trackMessage = await message(playlist)
@@ -104,8 +125,10 @@ export const createTrack = async (
 			this.ctx.radioSubscriptions.delete(this.guildId as string)
 		},
 		onError: async function (err: Error) {
-			if (this.ctx.logger) this.ctx.logger.error(`[createTrack] ${err}`)
-			else console.error(err)
+			if (this.ctx.logger)
+				this.ctx.logger.error(`[createTrack] ${err}`)
+			else
+				console.error(err)
 			await this.onFinish()
 		},
 	}
