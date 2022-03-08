@@ -116,10 +116,10 @@ export const createTrack = async (
 			}
 		},
 		onFinish: async function () {
-			if (this.lyricMessages && this.lyricMessages.length) {
-				Promise.all(this.lyricMessages.map((x) => x.delete()))
+			if (this.lyricsMessages && this.lyricsMessages.length) {
+				Promise.all(this.lyricsMessages.map((x) => x.delete()))
 					.then(() => {
-						this.lyricMessages = []
+						this.lyricsMessages = []
 					})
 					.catch(() => {})
 			}
