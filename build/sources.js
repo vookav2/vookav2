@@ -97,8 +97,13 @@ const createTrack = async (ctx, query, message) => {
             }
         },
         onFinish: async function () {
-            // if (this.lyrics?.lyricMessages?.length) {
-            // }
+            if (this.lyricMessages && this.lyricMessages.length) {
+                Promise.all(this.lyricMessages.map((x) => x.delete()))
+                    .then(() => {
+                    this.lyricMessages = [];
+                })
+                    .catch(() => { });
+            }
         },
         onDestroy: async function () {
             await this.trackMessage?.delete();
