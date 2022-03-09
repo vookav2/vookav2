@@ -81,7 +81,9 @@ export const createTrack = async (
 			}
 			if (this.metadata) {
 				try {
-					const lyrics = await songlyrics(this.metadata.title)
+					const lyrics = await songlyrics(
+						this.metadata.title + ' ' + this.metadata.artistName
+					)
 					const splitLyrics = createLyricsContent(lyrics, this.metadata)
 					this.lyricsMessages = await Promise.all(
 						splitLyrics.map((x) => message.followUp(x))

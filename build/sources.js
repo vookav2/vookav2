@@ -63,7 +63,7 @@ const createTrack = async (ctx, query, message) => {
             }
             if (this.metadata) {
                 try {
-                    const lyrics = await (0, songlyrics_1.default)(this.metadata.title);
+                    const lyrics = await (0, songlyrics_1.default)(this.metadata.title + ' ' + this.metadata.artistName);
                     const splitLyrics = (0, utils_1.createLyricsContent)(lyrics, this.metadata);
                     this.lyricsMessages = await Promise.all(splitLyrics.map((x) => message.followUp(x)));
                     return;
