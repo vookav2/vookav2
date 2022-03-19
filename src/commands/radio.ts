@@ -32,7 +32,7 @@ export const execute = async function (interaction: CommandInteraction) {
 		try {
 			const voiceConnection: VoiceConnection =
 				await this.voiceManager.createVoiceConnection(interaction.member)
-			radioSubscription = new Radio(this, voiceConnection)
+			radioSubscription = new Radio(this, voiceConnection, interaction.member.voice.channel)
 
 			this.radioSubscriptions.set(interaction.guildId, radioSubscription)
 		} catch (err) {

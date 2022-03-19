@@ -11,7 +11,7 @@ import {
 	AudioPlayerStatus,
 	AudioResource,
 } from '@discordjs/voice'
-import { InteractionCollector, MessageComponentInteraction } from 'discord.js'
+import { InteractionCollector, MessageComponentInteraction, StageChannel, VoiceChannel } from 'discord.js'
 import { VookaClient } from '../client'
 import { ITrack } from '../contracts'
 import { wait } from '../utils'
@@ -96,14 +96,16 @@ export class Radio {
 	public ctx: VookaClient
 	public readonly voiceConnection: VoiceConnection
 	public readonly audioPlayer: AudioPlayer
+	public readonly voiceChannel: VoiceChannel | StageChannel
 	public track: ITrack | undefined
 
 	public locked: boolean = false
 	private queueLocked: boolean = false
 
-	public constructor(_ctx: VookaClient, _voiceConnection: VoiceConnection) {
+	public constructor(_ctx: VookaClient, _voiceConnection: VoiceConnection, _voiceChannel: VoiceChannel | StageChannel) {
 		this.ctx = _ctx
 		this.voiceConnection = _voiceConnection
+		this.voiceChannel = _voiceChannel
 		this.voiceConnection.on('stateChange', onVoiceStateChange.bind(this))
 
 		this.audioPlayer = createAudioPlayer()
