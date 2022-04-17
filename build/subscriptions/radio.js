@@ -114,6 +114,7 @@ class Radio {
                     case 'repeat':
                         this.isRepeated = true;
                         await this.track.onRepeated(this.isRepeated);
+                        break;
                     case 'pause':
                         this.audioPlayer.pause(true);
                         break;
