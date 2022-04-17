@@ -4,5 +4,5 @@ config.json
 dist
 .vscode
 dump
-yarn.error.log
+yarn-error.log
 .DS_Store
