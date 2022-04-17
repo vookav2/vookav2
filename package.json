@@ -6,12 +6,8 @@
 	"license": "MIT",
 	"repository": "git@github.com:mr687/vookav2.git",
 	"author": "mr687 <davinomoehdanino@gmail.com>",
-	"bin": "build/index.js",
 	"pkg": {
-    "scripts": [
-			"build/**/*.js",
-			"config.json"
-		],
+    "scripts": "build/**/*.js",
     "targets": [ "linux" ],
     "outputPath": "dist"
   },
