@@ -6,7 +6,14 @@
 	"license": "MIT",
 	"repository": "git@github.com:mr687/vookav2.git",
 	"author": "mr687 <davinomoehdanino@gmail.com>",
-	"bin": "build/index.js",
+	"pkg": {
+    "scripts": [
+			"build/**/*.js",
+			"config.json"
+		],
+    "targets": [ "linux" ],
+    "outputPath": "dist"
+  },
 	"scripts": {
 		"start": "ts-node --project tsconfig.prod.json src/index.ts",
 		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
@@ -15,7 +22,7 @@
 		"test": "mocha -r ts-node/register **/*.spec.ts"
 	},
 	"dependencies": {
-		"@discordjs/builders": "^0.6.0",
+		"@discordjs/builgiders": "^0.6.0",
 		"@discordjs/opus": "^0.6.0",
 		"@discordjs/rest": "^0.1.0-canary.0",
 		"@discordjs/voice": "^0.6.0",
