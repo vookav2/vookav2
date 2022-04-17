@@ -78,25 +78,27 @@ const createTrack = async (ctx, query, message) => {
             this.trackMessage = await message(playlist);
             this.guildId = this.trackMessage?.guildId;
         },
-        onPlay: async function () {
+        onPlay: async function (isRepeated = false) {
             if (this.trackMessage) {
                 const embed = (0, utils_1.createPlaylistEmbedOptions)(playlist, {
                     currentSong: this.metadata,
                     status: 'playing',
+                    repeat: isRepeated,
                 });
                 this.trackMessage = await this.trackMessage.edit(embed);
             }
         },
-        onPause: async function () {
+        onPause: async function (isRepeated = false) {
             if (this.trackMessage) {
                 const embed = (0, utils_1.createPlaylistEmbedOptions)(playlist, {
                     currentSong: this.metadata,
                     status: 'paused',
+                    repeat: isRepeated,
                 });
                 this.trackMessage = await this.trackMessage.edit(embed);
             }
         },
-        onFinish: async function () {
+        onFinish: async function (isRepeated = false) {
             if (this.lyricsMessages && this.lyricsMessages.length) {
                 Promise.all(this.lyricsMessages.map((x) => x.delete()))
                     .then(() => {
@@ -105,7 +107,7 @@ const createTrack = async (ctx, query, message) => {
                     .catch(() => { });
             }
         },
-        onDestroy: async function () {
+        onDestroy: async function (isRepeated = false) {
             await this.trackMessage?.delete();
             await this.onFinish();
             this.ctx.radioSubscriptions.delete(this.guildId);
@@ -122,7 +124,6 @@ const createTrack = async (ctx, query, message) => {
                 const embed = (0, utils_1.createPlaylistEmbedOptions)(playlist, {
                     currentSong: this.metadata,
                     repeat: isRepeated,
-                    status: 'repeated'
                 });
                 this.trackMessage = await this.trackMessage.edit(embed);
             }

@@ -99,25 +99,27 @@ export const createTrack = async (
 			this.trackMessage = await message(playlist)
 			this.guildId = this.trackMessage?.guildId
 		},
-		onPlay: async function () {
+		onPlay: async function (isRepeated: boolean = false) {
 			if (this.trackMessage) {
 				const embed = createPlaylistEmbedOptions(playlist, {
 					currentSong: this.metadata,
 					status: 'playing',
+					repeat: isRepeated,
 				})
 				this.trackMessage = await this.trackMessage.edit(embed)
 			}
 		},
-		onPause: async function () {
+		onPause: async function (isRepeated: boolean = false) {
 			if (this.trackMessage) {
 				const embed = createPlaylistEmbedOptions(playlist, {
 					currentSong: this.metadata,
 					status: 'paused',
+					repeat: isRepeated,
 				})
 				this.trackMessage = await this.trackMessage.edit(embed)
 			}
 		},
-		onFinish: async function () {
+		onFinish: async function (isRepeated: boolean = false) {
 			if (this.lyricsMessages && this.lyricsMessages.length) {
 				Promise.all(this.lyricsMessages.map((x) => x.delete()))
 					.then(() => {
@@ -126,7 +128,7 @@ export const createTrack = async (
 					.catch(() => {})
 			}
 		},
-		onDestroy: async function () {
+		onDestroy: async function (isRepeated: boolean = false) {
 			await this.trackMessage?.delete()
 			await this.onFinish()
 			this.ctx.radioSubscriptions.delete(this.guildId as string)
@@ -143,7 +145,6 @@ export const createTrack = async (
 				const embed = createPlaylistEmbedOptions(playlist, {
 					currentSong: this.metadata,
 					repeat: isRepeated,
-					status: 'repeated'
 				})
 				this.trackMessage = await this.trackMessage.edit(embed)
 			}

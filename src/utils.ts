@@ -110,7 +110,7 @@ export function createPlaylistEmbedOptions(
 	songs.forEach((song, i) => {
 		if (options?.currentSong?.id === song.id) {
 			contents.push(
-				`\`${iconStatus[options.status || 'loading']}\` \`${song.title} - ${
+				`\`${iconStatus[options.repeat ? 'repeated' : (options.status || 'loading')]}\` \`${song.title} - ${
 					song.artistName
 				}\` \`[${song.durationFormatted}]\``
 			)

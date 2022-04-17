@@ -77,15 +77,15 @@ const onAudioStateChange = async function (
 	switch (newState.status) {
 		case AudioPlayerStatus.Idle:
 			if (oldState.status !== AudioPlayerStatus.Idle) {
-				;(oldState.resource as AudioResource<ITrack>).metadata.onFinish()
+				;(oldState.resource as AudioResource<ITrack>).metadata.onFinish(this.isRepeated)
 				this.processQueue()
 			}
 			break
 		case AudioPlayerStatus.Playing:
-			;(newState.resource as AudioResource<ITrack>).metadata.onPlay()
+			;(newState.resource as AudioResource<ITrack>).metadata.onPlay(this.isRepeated)
 			break
 		case AudioPlayerStatus.Paused:
-			;(newState.resource as AudioResource<ITrack>).metadata.onPause()
+			;(newState.resource as AudioResource<ITrack>).metadata.onPause(this.isRepeated)
 			break
 	}
 }

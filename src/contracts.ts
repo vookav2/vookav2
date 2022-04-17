@@ -24,9 +24,9 @@ export interface ITrack {
 	createProbeAndAudioSource: (ytId: string) => Promise<AudioResource<ITrack>>
 	pleaseSendMeTheLyrics: (message: MessageComponentInteraction) => Promise<void>
 	onPrepare: () => Promise<void>
-	onPlay: () => Promise<void>
-	onPause: () => Promise<void>
-	onFinish: () => Promise<void>
+	onPlay: (isRepeated?: boolean) => Promise<void>
+	onPause: (isRepeated?: boolean) => Promise<void>
+	onFinish: (isRepeated?: boolean) => Promise<void>
 	onDestroy: () => Promise<void>
 	onError: (error: Error) => Promise<void>
 	onRepeated: (isRepeated: boolean) => Promise<void>

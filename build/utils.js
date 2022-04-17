@@ -87,7 +87,7 @@ function createPlaylistEmbedOptions(playlist, options) {
     const songs = paginate.items;
     songs.forEach((song, i) => {
         if (options?.currentSong?.id === song.id) {
-            contents.push(`\`${iconStatus[options.status || 'loading']}\` \`${song.title} - ${song.artistName}\` \`[${song.durationFormatted}]\``);
+            contents.push(`\`${iconStatus[options.repeat ? 'repeated' : (options.status || 'loading')]}\` \`${song.title} - ${song.artistName}\` \`[${song.durationFormatted}]\``);
         }
         else {
             contents.push(`\`[${i + paginate.offset + 1}]\` \`${song.title} - ${song.artistName}\` \`[${song.durationFormatted}]\``);

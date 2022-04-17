@@ -51,17 +51,17 @@ const onAudioStateChange = async function (oldState, newState) {
         case voice_1.AudioPlayerStatus.Idle:
             if (oldState.status !== voice_1.AudioPlayerStatus.Idle) {
                 ;
-                oldState.resource.metadata.onFinish();
+                oldState.resource.metadata.onFinish(this.isRepeated);
                 this.processQueue();
             }
             break;
         case voice_1.AudioPlayerStatus.Playing:
             ;
-            newState.resource.metadata.onPlay();
+            newState.resource.metadata.onPlay(this.isRepeated);
             break;
         case voice_1.AudioPlayerStatus.Paused:
             ;
-            newState.resource.metadata.onPause();
+            newState.resource.metadata.onPause(this.isRepeated);
             break;
     }
 };
