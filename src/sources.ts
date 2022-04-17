@@ -144,6 +144,7 @@ export const createTrack = async (
 			if (this.trackMessage) {
 				const embed = createPlaylistEmbedOptions(playlist, {
 					currentSong: this.metadata,
+					status: 'playing',
 					repeat: isRepeated,
 				})
 				this.trackMessage = await this.trackMessage.edit(embed)

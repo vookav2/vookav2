@@ -123,6 +123,7 @@ const createTrack = async (ctx, query, message) => {
             if (this.trackMessage) {
                 const embed = (0, utils_1.createPlaylistEmbedOptions)(playlist, {
                     currentSong: this.metadata,
+                    status: 'playing',
                     repeat: isRepeated,
                 });
                 this.trackMessage = await this.trackMessage.edit(embed);
