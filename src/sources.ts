@@ -120,7 +120,7 @@ export const createTrack = async (
 			}
 		},
 		onFinish: async function (isRepeated: boolean = false) {
-			if (this.lyricsMessages && this.lyricsMessages.length) {
+			if (!isRepeated && this.lyricsMessages && this.lyricsMessages.length) {
 				Promise.all(this.lyricsMessages.map((x) => x.delete()))
 					.then(() => {
 						this.lyricsMessages = []
