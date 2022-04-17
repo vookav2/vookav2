@@ -6,6 +6,7 @@
 	"license": "MIT",
 	"repository": "git@github.com:mr687/vookav2.git",
 	"author": "mr687 <davinomoehdanino@gmail.com>",
+	"bin": "build/index.js",
 	"scripts": {
 		"start": "ts-node --project tsconfig.prod.json src/index.ts",
 		"dev": "ts-node-dev --respawn --transpile-only --poll ./src/index.ts",
