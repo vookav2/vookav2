@@ -98,6 +98,7 @@ export class Radio {
 	public readonly audioPlayer: AudioPlayer
 	public readonly voiceChannel: VoiceChannel | StageChannel
 	public track: ITrack | undefined
+	public isRepeated: boolean = false
 
 	public locked: boolean = false
 	private queueLocked: boolean = false
@@ -139,11 +140,15 @@ export class Radio {
 							this.voiceConnection.destroy()
 							break
 						case 'next':
+							this.isRepeated = false
 							this.audioPlayer.stop(true)
 							break
 						case 'play':
 							this.audioPlayer.unpause()
 							break
+						case 'repeat':
+							this.isRepeated = true
+							await this.track.onRepeated(this.isRepeated)
 						case 'pause':
 							this.audioPlayer.pause(true)
 							break
@@ -170,10 +175,14 @@ export class Radio {
 		this.queueLocked = true
 
 		try {
-			const songIndex = this.track.playlist.songs.findIndex(
+			let songIndex = this.track.playlist.songs.findIndex(
 				(song) => song.id === this.track?.metadata?.id
 			)
-			this.track.metadata = this.track.playlist.songs.at(songIndex + 1)
+			if (!this.isRepeated) {
+				songIndex += 1
+			}
+
+			this.track.metadata = this.track.playlist.songs.at(songIndex)
 			if (!this.track.metadata) {
 				this.voiceConnection.destroy()
 				return

@@ -85,6 +85,7 @@ export function createPlaylistEmbedOptions(
 		status: 'loading',
 		page: 1,
 		perPage: 5,
+		repeat: false,
 		...options,
 	}
 	const currentSongIndex = playlist.songs.findIndex(
@@ -96,6 +97,7 @@ export function createPlaylistEmbedOptions(
 		loading: '[🔄]',
 		paused: '[⏸]',
 		playing: '[▶️]',
+		repeated: '[🔁]',
 	}
 
 	const contents = ['`Queue(s) List ◽️◽️◽️◽️◽️◽️`\n']
@@ -156,8 +158,17 @@ export function createPlaylistButtons(
 	if (options?.status !== 'loading') {
 		disable = false
 	}
+	let repeatOrsingleButton = new MessageButton()
+		.setLabel('Repeat')
+		.setCustomId('repeat')
+		.setStyle(2)
+		.setDisabled(disable)
+	if (options?.currentSong && options.repeat) {
+		repeatOrsingleButton.setDisabled(true)
+	}
 	return [
 		playOrPauseButton.setDisabled(disable),
+		repeatOrsingleButton,
 		new MessageButton()
 			.setLabel('Next')
 			.setCustomId('next')

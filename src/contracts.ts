@@ -29,6 +29,7 @@ export interface ITrack {
 	onFinish: () => Promise<void>
 	onDestroy: () => Promise<void>
 	onError: (error: Error) => Promise<void>
+	onRepeated: (isRepeated: boolean) => Promise<void>
 }
 
 export interface ICommand {
@@ -42,10 +43,11 @@ export interface IEvent {
 	execute: () => Promise<void>
 }
 
-type PlaylistStatuses = 'loading' | 'playing' | 'paused'
+type PlaylistStatuses = 'loading' | 'playing' | 'paused' | 'repeated'
 export interface PlaylistEmbedOptions {
 	status?: PlaylistStatuses
 	currentSong?: Song
 	page?: number
-	perPage?: number
+	perPage?: number,
+	repeat?: boolean
 }

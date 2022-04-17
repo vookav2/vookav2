@@ -138,6 +138,16 @@ export const createTrack = async (
 				console.error(err)
 			await this.onFinish()
 		},
+		onRepeated: async function (isRepeated: boolean = false) {
+			if (this.trackMessage) {
+				const embed = createPlaylistEmbedOptions(playlist, {
+					currentSong: this.metadata,
+					repeat: isRepeated,
+					status: 'repeated'
+				})
+				this.trackMessage = await this.trackMessage.edit(embed)
+			}
+		},
 	}
 
 	await track.onPrepare()
