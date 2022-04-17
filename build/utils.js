@@ -68,6 +68,7 @@ function createPlaylistEmbedOptions(playlist, options) {
         status: 'loading',
         page: 1,
         perPage: 5,
+        repeat: false,
         ...options,
     };
     const currentSongIndex = playlist.songs.findIndex((p) => p.id === options?.currentSong?.id);
@@ -76,6 +77,7 @@ function createPlaylistEmbedOptions(playlist, options) {
         loading: '[🔄]',
         paused: '[⏸]',
         playing: '[▶️]',
+        repeated: '[🔁]',
     };
     const contents = ['`Queue(s) List ◽️◽️◽️◽️◽️◽️`\n'];
     const paginate = paginateArray(playlist.songs, {
@@ -122,8 +124,17 @@ function createPlaylistButtons(options) {
     if (options?.status !== 'loading') {
         disable = false;
     }
+    let repeatOrsingleButton = new discord_js_1.MessageButton()
+        .setLabel('Repeat')
+        .setCustomId('repeat')
+        .setStyle(2)
+        .setDisabled(disable);
+    if (options?.currentSong && options.repeat) {
+        repeatOrsingleButton.setDisabled(true);
+    }
     return [
         playOrPauseButton.setDisabled(disable),
+        repeatOrsingleButton,
         new discord_js_1.MessageButton()
             .setLabel('Next')
             .setCustomId('next')

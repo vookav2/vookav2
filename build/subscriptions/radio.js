@@ -70,12 +70,15 @@ class Radio {
     ctx;
     voiceConnection;
     audioPlayer;
+    voiceChannel;
     track;
+    isRepeated = false;
     locked = false;
     queueLocked = false;
-    constructor(_ctx, _voiceConnection) {
+    constructor(_ctx, _voiceConnection, _voiceChannel) {
         this.ctx = _ctx;
         this.voiceConnection = _voiceConnection;
+        this.voiceChannel = _voiceChannel;
         this.voiceConnection.on('stateChange', onVoiceStateChange.bind(this));
         this.audioPlayer = (0, voice_1.createAudioPlayer)();
         this.audioPlayer.on('stateChange', onAudioStateChange.bind(this));
@@ -102,11 +105,15 @@ class Radio {
                         this.voiceConnection.destroy();
                         break;
                     case 'next':
+                        this.isRepeated = false;
                         this.audioPlayer.stop(true);
                         break;
                     case 'play':
                         this.audioPlayer.unpause();
                         break;
+                    case 'repeat':
+                        this.isRepeated = true;
+                        await this.track.onRepeated(this.isRepeated);
                     case 'pause':
                         this.audioPlayer.pause(true);
                         break;
@@ -128,8 +135,11 @@ class Radio {
             return;
         this.queueLocked = true;
         try {
-            const songIndex = this.track.playlist.songs.findIndex((song) => song.id === this.track?.metadata?.id);
-            this.track.metadata = this.track.playlist.songs.at(songIndex + 1);
+            let songIndex = this.track.playlist.songs.findIndex((song) => song.id === this.track?.metadata?.id);
+            if (!this.isRepeated) {
+                songIndex += 1;
+            }
+            this.track.metadata = this.track.playlist.songs.at(songIndex);
             if (!this.track.metadata) {
                 this.voiceConnection.destroy();
                 return;

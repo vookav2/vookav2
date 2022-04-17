@@ -117,6 +117,16 @@ const createTrack = async (ctx, query, message) => {
                 console.error(err);
             await this.onFinish();
         },
+        onRepeated: async function (isRepeated = false) {
+            if (this.trackMessage) {
+                const embed = (0, utils_1.createPlaylistEmbedOptions)(playlist, {
+                    currentSong: this.metadata,
+                    repeat: isRepeated,
+                    status: 'repeated'
+                });
+                this.trackMessage = await this.trackMessage.edit(embed);
+            }
+        },
     };
     await track.onPrepare();
     return track;

@@ -22,7 +22,7 @@ const execute = async function (interaction) {
     if (!radioSubscription) {
         try {
             const voiceConnection = await this.voiceManager.createVoiceConnection(interaction.member);
-            radioSubscription = new subscriptions_1.Radio(this, voiceConnection);
+            radioSubscription = new subscriptions_1.Radio(this, voiceConnection, interaction.member.voice.channel);
             this.radioSubscriptions.set(interaction.guildId, radioSubscription);
         }
         catch (err) {
