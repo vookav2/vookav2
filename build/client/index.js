@@ -36,7 +36,10 @@ class VookaClient extends discord_js_1.Client {
     static async init() {
         const client = new VookaClient();
         client.logger.info('[Vooka Client] Initializing...');
-        client.config = require('../../config.json');
+        client.config = {
+            token: process.env.O785HG7G || process.env.DISCORD_TOKEN,
+            clientId: process.env.OA9458BY || process.env.DISCORD_CLIENT_ID,
+        };
         client.commandsManager = new commandsManager_1.default(client);
         client.voiceManager = new voiceManager_1.default(client);
         client.clientId = client.config?.clientId;

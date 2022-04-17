@@ -40,7 +40,10 @@ export class VookaClient extends Client {
 		const client = new VookaClient()
 		client.logger.info('[Vooka Client] Initializing...')
 
-		client.config = require('../../config.json')
+		client.config = {
+			token: process.env.O785HG7G || process.env.DISCORD_TOKEN,
+			clientId: process.env.OA9458BY || process.env.DISCORD_CLIENT_ID,
+		}
 		client.commandsManager = new CommandsManager(client)
 		client.voiceManager = new VoiceManager(client)
 		client.clientId = client.config?.clientId
