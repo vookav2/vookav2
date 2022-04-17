@@ -115,7 +115,7 @@ function createPlaylistButtons(options) {
         .setLabel('Play')
         .setCustomId('play')
         .setStyle(1);
-    if (options?.currentSong && options.status === 'playing') {
+    if (options?.currentSong && ['playing', 'repeated'].includes(options.status)) {
         playOrPauseButton = new discord_js_1.MessageButton()
             .setLabel('Pause')
             .setCustomId('pause')
