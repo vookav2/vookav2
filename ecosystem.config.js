@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [
 		{
-			name: 'vookav2',
+			name: 'pm2-ecosystem-example',
 			script: './build/index.js',
 			// max_memory_restart: '700M',
 			source_map_support: true,
